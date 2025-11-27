@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Bewerbung als Lehrkraft | Chancen-Pilot</title>
-  <!-- SurveyJS jQuery Version - stabile Rendering-Unterstützung -->
+  <!-- SurveyJS jQuery (CDN für Development) -->
   <script src="https://unpkg.com/jquery@3.7.1/dist/jquery.min.js"></script>
   <link href="https://unpkg.com/survey-jquery@1.9.138/defaultV2.min.css" rel="stylesheet">
   <script src="https://unpkg.com/survey-jquery@1.9.138/survey.jquery.min.js"></script>
@@ -30,7 +30,7 @@
       margin: 10px 0 0;
       opacity: 0.9;
     }
-    #survey-container {
+    #bewerbung {
       max-width: 800px;
       margin: 0 auto;
       background: white;
@@ -47,8 +47,10 @@
     <p>Bewerbungsformular für Lehrkräfte</p>
   </div>
 
-  <div id="survey-container"></div>
+  <!-- Widget Container -->
+  <div id="bewerbung"></div>
 
+  <!-- Widget initialisieren -->
   <script type="module">
     import { cpApplicationTutor } from '/src/survey-config.js';
 
@@ -60,30 +62,14 @@
       options.html = options.text;
     });
 
-    // Events
-    survey.onValueChanged.add((sender, options) => {
-      console.log(`[Survey] ${options.name} = "${options.value}"`);
-
-      if (options.name === 'Position') {
-        const subjectsPage = sender.getPageByName('subjects');
-        const experiencesPage = sender.getPageByName('experiences');
-        const qualificationsPage = sender.getPageByName('qualifications');
-
-        console.log('[Survey] Pages Sichtbarkeit:');
-        console.log(`  - subjects: ${subjectsPage?.isVisible}`);
-        console.log(`  - experiences: ${experiencesPage?.isVisible}`);
-        console.log(`  - qualifications: ${qualificationsPage?.isVisible}`);
-      }
-    });
-
+    // Event: Formular abgeschlossen
     survey.onComplete.add((sender) => {
-      console.log('[Survey] Abgeschlossen!');
-      console.log('[Survey] Daten:', JSON.stringify(sender.data, null, 2));
+      console.log('[ChancenPilot] Bewerbung eingereicht:', sender.data);
     });
 
-    // Survey mit jQuery rendern
-    $("#survey-container").Survey({ model: survey });
-    console.log('[Survey] Formular geladen');
+    // Mit jQuery rendern
+    $("#bewerbung").Survey({ model: survey });
+    console.log('[ChancenPilot] Formular initialisiert');
   </script>
 </body>
 </html>

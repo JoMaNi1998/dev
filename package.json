@@ -24,7 +24,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "jquery": "^3.7.1",
     "survey-core": "^2.4.0",
-    "survey-js-ui": "^2.4.0"
+    "survey-jquery": "^1.12.57"
   }
 }
