@@ -1,0 +1,30 @@
+{
+  "name": "cp-form-tests",
+  "version": "1.0.0",
+  "description": "SurveyJS Bewerbungsformular für Chancen-Pilot",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest run --coverage"
+  },
+  "devDependencies": {
+    "vite": "^5.4.21",
+    "vitest": "^2.1.0"
+  },
+  "keywords": [
+    "surveyjs",
+    "form",
+    "vitest"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "survey-core": "^2.4.0",
+    "survey-js-ui": "^2.4.0"
+  }
+}
