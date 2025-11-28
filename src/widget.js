@@ -3,7 +3,7 @@
  * Generisches, einbettbares Formular-Widget basierend auf SurveyJS v2
  */
 
-import { Model, Serializer } from 'survey-core';
+import { Serializer } from 'survey-core';
 import { SurveyModel } from 'survey-js-ui';
 
 // Styles
@@ -93,11 +93,11 @@ export function initForm(containerId, formConfig, options = {}) {
     applyTheme(options.theme);
   }
 
-  // Survey Model erstellen
-  const survey = new Model(formConfig);
+  // Survey Model erstellen (SurveyModel direkt mit JSON)
+  const survey = new SurveyModel(formConfig);
 
   // HTML in Beschreibungen rendern
-  survey.onTextMarkdown.add((survey, opts) => {
+  survey.onTextMarkdown.add((sender, opts) => {
     opts.html = opts.text;
   });
 
@@ -124,11 +124,10 @@ export function initForm(containerId, formConfig, options = {}) {
     }
   });
 
-  // V2 Native Rendering (ohne jQuery!)
-  const surveyUI = new SurveyModel(survey);
-  surveyUI.render(containerId);
+  // V2 Vanilla Rendering (benötigt DOM-Element, nicht ID-String)
+  survey.render(container);
 
-  console.log('[FormWidget] Widget initialisiert (v2 Native)');
+  console.log('[FormWidget] Widget initialisiert (v2 Vanilla)');
 
   return survey;
 }
