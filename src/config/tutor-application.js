@@ -1,6 +1,6 @@
 /**
- * SurveyJS Config: cp-application-tutor
- * Konvertiert aus formSystem/public/js/form-configs.js
+ * SurveyJS Config: Tutor Application Form
+ * Bewerbungsformular für Assistenz-Lehrkräfte und Therapeuten
  */
 
 export const cpApplicationTutor = {
@@ -29,9 +29,7 @@ export const cpApplicationTutor = {
   `,
 
   pages: [
-    // ============================================
     // PAGE 1: Persönliche Daten
-    // ============================================
     {
       name: "personal",
       title: "Persönliche Daten",
@@ -68,7 +66,7 @@ export const cpApplicationTutor = {
           name: "Position",
           title: "Bewerben als",
           isRequired: true,
-          description: "<strong>Assistenz-Lehrkraft:</strong> Unterstütze Lehrkräfte im regulären Unterricht und bei der individuellen Förderung von Schülern.<br><br><strong>Therapeutische Unterstützung:</strong> Biete spezialisierte therapeutische Hilfe für Lernende mit besonderen Bedarfen (z.B. Logopädie, Ergotherapie, Lerntherapie).",
+          helpText: "<strong>Assistenz-Lehrkraft:</strong> Unterstütze Lehrkräfte im regulären Unterricht und bei der individuellen Förderung von Schülern.<br><br><strong>Therapeutische Unterstützung:</strong> Biete spezialisierte therapeutische Hilfe für Lernende mit besonderen Bedarfen (z.B. Logopädie, Ergotherapie, Lerntherapie).",
           choices: [
             { value: "Assistenz-Lehrkraft", text: "Assistenz-Lehrkraft" },
             { value: "Therapeutische Unterstützung", text: "Therapeutische Unterstützung" }
@@ -77,9 +75,7 @@ export const cpApplicationTutor = {
       ]
     },
 
-    // ============================================
     // PAGE 2: Unterrichtsfächer (nur für Assistenz-Lehrkraft)
-    // ============================================
     {
       name: "subjects",
       title: "Unterrichtsfächer",
@@ -151,9 +147,7 @@ export const cpApplicationTutor = {
       ]
     },
 
-    // ============================================
-    // PAGE 3: Erfahrungen (Standard für Assistenz-Lehrkraft)
-    // ============================================
+    // PAGE 3: Erfahrungen (für Assistenz-Lehrkraft)
     {
       name: "experiences",
       title: "Erfahrungen & Qualifikationen",
@@ -217,9 +211,7 @@ export const cpApplicationTutor = {
       ]
     },
 
-    // ============================================
     // PAGE 3b: Qualifikationen (für Therapeutische Unterstützung)
-    // ============================================
     {
       name: "qualifications",
       title: "Qualifikationen & Erfahrungen",
@@ -288,9 +280,7 @@ export const cpApplicationTutor = {
       ]
     },
 
-    // ============================================
     // PAGE 4: Kontaktdaten & Details
-    // ============================================
     {
       name: "contact",
       title: "Kontaktdaten & Details",
