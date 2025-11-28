@@ -4,22 +4,33 @@
  */
 
 /* ══════════════════════════════════════════════════════════
-   CSS VARIABLEN
+   WIDGET CONTAINER (alle Variablen hier -> isoliert von Host-Seite)
    ══════════════════════════════════════════════════════════ */
-:root {
+.fw-container {
   /* ────────────────────────────────────────
-     THEME COLORS (überschreibbar per JS)
+     THEME (überschreibbar per JS für Corporate Identity)
      ──────────────────────────────────────── */
+  /* 1. Branding Farben */
   --fw-primary: #2a667b;
   --fw-primary-hover: #78b8bf;
   --fw-primary-light: #e6f2f4;
   --fw-primary-dark: #1e4a56;
 
+  /* 2. Form (Stil: Modern vs. Klassisch) */
+  --fw-radius: 12px;
+
+  /* 3. Typografie (Integration mit Host-Seite) */
+  --fw-font-family: inherit;
+
+  /* 4. Dark Mode / Kontrast */
+  --fw-bg: #ffffff;
+  --fw-text: #111827;
+  --fw-border: #e5e7eb;
+
   /* ────────────────────────────────────────
      SYSTEM (fest, nicht überschreibbar)
      ──────────────────────────────────────── */
-  /* Typography */
-  --fw-font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  /* Typography Sizes */
   --fw-font-size-sm: 0.875rem;
   --fw-font-size-base: 1rem;
   --fw-font-size-lg: 1.125rem;
@@ -61,25 +72,48 @@
   --fw-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   --fw-shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.2);
   --fw-transition: 0.2s ease;
-}
 
-/* ══════════════════════════════════════════════════════════
-   WIDGET CONTAINER
-   ══════════════════════════════════════════════════════════ */
-.fw-container {
+  /* Container Layout */
   max-width: 800px;
   margin: 0 auto;
-  background: white;
+  background-color: var(--fw-bg);
+  color: var(--fw-text);
   min-height: 400px;
   box-shadow: var(--fw-shadow);
   border-radius: var(--fw-radius);
   font-family: var(--fw-font-family);
+  box-sizing: border-box;
 }
 
 /* ══════════════════════════════════════════════════════════
-   MODAL STYLES
+   MODAL STYLES (außerhalb .fw-container, braucht eigene Variablen)
    ══════════════════════════════════════════════════════════ */
 .fw-modal {
+  /* Eigene Variablen-Definitionen für Modals */
+  --fw-primary: #2a667b;
+  --fw-primary-hover: #78b8bf;
+  --fw-primary-light: #e6f2f4;
+  --fw-primary-dark: #1e4a56;
+  --fw-radius: 12px;
+  --fw-radius-sm: 6px;
+  --fw-font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --fw-shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.2);
+  --fw-gray-50: #f9fafb;
+  --fw-gray-200: #e5e7eb;
+  --fw-gray-300: #d1d5db;
+  --fw-gray-400: #9ca3af;
+  --fw-gray-700: #374151;
+  --fw-gray-900: #111827;
+  --fw-spacing-sm: 0.5rem;
+  --fw-spacing-md: 0.75rem;
+  --fw-spacing-lg: 1rem;
+  --fw-spacing-xl: 1.5rem;
+  --fw-font-size-base: 1rem;
+  --fw-font-size-lg: 1.125rem;
+  --fw-font-weight-medium: 500;
+  --fw-font-weight-semibold: 600;
+  --fw-transition: 0.2s ease;
+
   border: none;
   border-radius: var(--fw-radius);
   padding: 0;
@@ -185,84 +219,88 @@
 }
 
 /* ══════════════════════════════════════════════════════════
-   SURVEYJS OVERRIDES
+   SURVEYJS OVERRIDES (gescoped auf .fw-container)
    ══════════════════════════════════════════════════════════ */
 
 /* Container */
-.sd-root-modern {
+.fw-container .sd-root-modern {
   --primary: var(--fw-primary);
   --primary-light: var(--fw-primary-light);
-  --background: #ffffff;
+  --background: var(--fw-bg);
   --background-dim: var(--fw-gray-50);
   --background-dim-light: var(--fw-gray-100);
-  --foreground: var(--fw-gray-900);
+  --foreground: var(--fw-text);
   --foreground-light: var(--fw-gray-600);
-  --border: var(--fw-gray-200);
+  --border: var(--fw-border);
   --border-light: var(--fw-gray-100);
 }
 
 /* Title */
-.sd-title {
+.fw-container .sd-title {
   color: var(--fw-primary) !important;
   font-weight: var(--fw-font-weight-semibold) !important;
 }
 
 /* Page Title */
-.sd-page__title {
+.fw-container .sd-page__title {
   color: var(--fw-gray-900) !important;
   font-weight: var(--fw-font-weight-semibold) !important;
 }
 
 /* Inputs */
-.sd-input {
-  border: 2px solid var(--fw-gray-200) !important;
+.fw-container .sd-input {
+  border: 2px solid var(--fw-border) !important;
   border-radius: var(--fw-radius) !important;
   padding: 14px 16px !important;
   font-size: var(--fw-font-size-base) !important;
+  color: var(--fw-text) !important;
+  background-color: var(--fw-bg) !important;
   transition: all var(--fw-transition) !important;
 }
 
-.sd-input:focus {
+.fw-container .sd-input:focus {
   border-color: var(--fw-primary) !important;
   box-shadow: 0 0 0 3px var(--fw-primary-light) !important;
   outline: none !important;
 }
 
 /* Dropdown */
-.sd-dropdown {
-  border: 2px solid var(--fw-gray-200) !important;
+.fw-container .sd-dropdown {
+  border: 2px solid var(--fw-border) !important;
   border-radius: var(--fw-radius) !important;
+  color: var(--fw-text) !important;
+  background-color: var(--fw-bg) !important;
 }
 
-.sd-dropdown:focus-within {
+.fw-container .sd-dropdown:focus-within {
   border-color: var(--fw-primary) !important;
   box-shadow: 0 0 0 3px var(--fw-primary-light) !important;
 }
 
 /* Buttons */
-.sd-btn {
+.fw-container .sd-btn {
   border-radius: var(--fw-radius) !important;
   font-weight: var(--fw-font-weight-medium) !important;
   padding: 12px 24px !important;
   transition: all var(--fw-transition) !important;
 }
 
-.sd-btn--action {
+.fw-container .sd-btn--action {
   background: var(--fw-primary) !important;
   color: white !important;
   border: none !important;
   box-shadow: var(--fw-shadow) !important;
 }
 
-.sd-btn--action:hover {
+.fw-container .sd-btn--action:hover {
   background: var(--fw-primary-dark) !important;
   transform: translateY(-1px) !important;
   box-shadow: var(--fw-shadow-lg) !important;
 }
 
 /* Navigation Buttons */
-.sd-navigation__complete-btn,
-.sd-navigation__next-btn {
+.fw-container .sd-navigation__complete-btn,
+.fw-container .sd-navigation__next-btn {
   background: var(--fw-primary) !important;
   color: white !important;
   border-radius: var(--fw-radius) !important;
@@ -271,84 +309,548 @@
   box-shadow: var(--fw-shadow) !important;
 }
 
-.sd-navigation__complete-btn:hover,
-.sd-navigation__next-btn:hover {
+.fw-container .sd-navigation__complete-btn:hover,
+.fw-container .sd-navigation__next-btn:hover {
   background: var(--fw-primary-dark) !important;
 }
 
-.sd-navigation__prev-btn {
+.fw-container .sd-navigation__prev-btn {
   border: 2px solid var(--fw-gray-300) !important;
   border-radius: var(--fw-radius) !important;
   color: var(--fw-gray-700) !important;
   background: white !important;
 }
 
-.sd-navigation__prev-btn:hover {
+.fw-container .sd-navigation__prev-btn:hover {
   border-color: var(--fw-primary) !important;
   color: var(--fw-primary) !important;
 }
 
 /* Progress Bar */
-.sd-progress__bar {
+.fw-container .sd-progress__bar {
   background: var(--fw-primary) !important;
 }
 
-.sd-progress {
+.fw-container .sd-progress {
   background: var(--fw-gray-200) !important;
 }
 
 /* Radio & Checkbox */
-.sd-selectbase__item--checked .sd-selectbase__control-label {
+.fw-container .sd-selectbase__item--checked .sd-selectbase__control-label {
   color: var(--fw-primary) !important;
 }
 
-.sd-item--checked .sd-item__decorator {
+.fw-container .sd-item--checked .sd-item__decorator {
   background: var(--fw-primary) !important;
   border-color: var(--fw-primary) !important;
 }
 
-.sd-item__decorator {
-  border: 2px solid var(--fw-gray-300) !important;
+.fw-container .sd-item__decorator {
+  border: 2px solid var(--fw-border) !important;
 }
 
-.sd-item:hover .sd-item__decorator {
+.fw-container .sd-item:hover .sd-item__decorator {
   border-color: var(--fw-primary) !important;
 }
 
 /* Question Container */
-.sd-element--with-frame {
+.fw-container .sd-element--with-frame {
   border-radius: var(--fw-radius) !important;
-  border: 1px solid var(--fw-gray-200) !important;
+  border: 1px solid var(--fw-border) !important;
 }
 
 /* Panel Dynamic */
-.sd-paneldynamic__add-btn {
+.fw-container .sd-paneldynamic__add-btn {
   color: var(--fw-primary) !important;
   border: 2px solid var(--fw-primary) !important;
   border-radius: var(--fw-radius) !important;
 }
 
-.sd-paneldynamic__add-btn:hover {
+.fw-container .sd-paneldynamic__add-btn:hover {
   background: var(--fw-primary-light) !important;
 }
 
 /* Error Messages */
-.sd-question__erbox {
+.fw-container .sd-question__erbox {
   background: var(--fw-error-light) !important;
   color: var(--fw-error) !important;
   border-radius: var(--fw-radius-sm) !important;
 }
 
 /* Required Asterisk */
-.sd-question__required-text {
+.fw-container .sd-question__required-text {
   color: var(--fw-error) !important;
 }
 
 /* Links */
-.sd-body a {
+.fw-container .sd-body a {
   color: var(--fw-primary) !important;
 }
 
-.sd-body a:hover {
+.fw-container .sd-body a:hover {
   color: var(--fw-primary-dark) !important;
+}
+
+/* ══════════════════════════════════════════════════════════
+   DYNAMIC POPUP STYLES
+   ══════════════════════════════════════════════════════════ */
+
+/* Container für den Custom "Hinzufügen" Button */
+.fw-add-button-container {
+  margin-top: var(--fw-spacing-md);
+  margin-bottom: var(--fw-spacing-lg);
+}
+
+/* Der "Fach hinzufügen" Button (Design wie im Screenshot) */
+.fw-add-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: var(--fw-spacing-md) var(--fw-spacing-lg);
+  background: white;
+  border: 2px solid var(--fw-primary);
+  border-radius: var(--fw-radius);
+  color: var(--fw-primary);
+  font-weight: var(--fw-font-weight-semibold);
+  font-family: var(--fw-font-family);
+  font-size: var(--fw-font-size-base);
+  cursor: pointer;
+  transition: all var(--fw-transition);
+  gap: var(--fw-spacing-sm);
+}
+
+.fw-add-btn:hover {
+  background: var(--fw-primary-light);
+}
+
+/* Das Icon im Button */
+.fw-add-icon {
+  font-size: 1.1em;
+}
+
+/* Das Formular im Popup */
+.fw-popup-survey-container {
+  padding: var(--fw-spacing-xl);
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+/* SurveyJS Styles im Popup */
+.fw-popup-survey-container .sd-root-modern {
+  --primary: var(--fw-primary);
+  --primary-light: var(--fw-primary-light);
+}
+
+.fw-popup-survey-container .sd-element--with-frame {
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  margin-bottom: var(--fw-spacing-md) !important;
+}
+
+.fw-popup-survey-container .sd-question__title {
+  font-weight: var(--fw-font-weight-semibold) !important;
+  color: var(--fw-gray-900) !important;
+  font-size: var(--fw-font-size-base) !important;
+}
+
+.fw-popup-survey-container .sd-input,
+.fw-popup-survey-container .sd-dropdown {
+  border: 1px solid var(--fw-gray-300) !important;
+  border-radius: var(--fw-radius-sm) !important;
+}
+
+/* Popup Survey Wrapper */
+.fw-popup-survey {
+  min-height: 100px;
+}
+
+.fw-popup-survey .sd-root-modern {
+  --primary: #2a667b;
+  --primary-light: #e6f2f4;
+  background: transparent !important;
+}
+
+.fw-popup-survey .sd-body {
+  padding: 0 !important;
+}
+
+.fw-popup-survey .sd-page {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.fw-popup-survey .sd-row {
+  padding: 0 !important;
+}
+
+/* Verstecke den "Complete" Button im Popup-Survey */
+.fw-popup-survey-container .sd-navigation,
+.fw-popup-survey .sd-navigation {
+  display: none !important;
+}
+
+/* Footer im Popup (Abbrechen / Hinzufügen) */
+.fw-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--fw-spacing-md);
+  padding: var(--fw-spacing-lg) var(--fw-spacing-xl);
+  background: var(--fw-gray-50);
+  border-top: 1px solid var(--fw-gray-200);
+  border-radius: 0 0 var(--fw-radius) var(--fw-radius);
+}
+
+.fw-btn-secondary {
+  background: white;
+  border: 1px solid var(--fw-gray-300);
+  color: var(--fw-gray-700);
+  padding: var(--fw-spacing-sm) var(--fw-spacing-lg);
+  border-radius: var(--fw-radius-sm);
+  cursor: pointer;
+  font-family: var(--fw-font-family);
+  font-size: var(--fw-font-size-base);
+  transition: all var(--fw-transition);
+}
+
+.fw-btn-secondary:hover {
+  border-color: var(--fw-gray-400);
+  background: var(--fw-gray-50);
+}
+
+.fw-btn-primary {
+  background: var(--fw-primary);
+  border: none;
+  color: white;
+  padding: var(--fw-spacing-sm) var(--fw-spacing-xl);
+  border-radius: var(--fw-radius-sm);
+  cursor: pointer;
+  font-family: var(--fw-font-family);
+  font-size: var(--fw-font-size-base);
+  font-weight: var(--fw-font-weight-semibold);
+  transition: all var(--fw-transition);
+}
+
+.fw-btn-primary:hover {
+  background: var(--fw-primary-dark);
+}
+
+/* ══════════════════════════════════════════════════════════
+   POPUP MODE: Kompakte Panel-Darstellung (nur Zusammenfassung)
+   ══════════════════════════════════════════════════════════ */
+
+/* Verstecke den Standard Add-Button von SurveyJS */
+.sd-paneldynamic.fw-popup-mode .sd-paneldynamic__add-btn {
+  display: none !important;
+}
+
+/* Panel-Einträge als kompakte Zeilen */
+.sd-paneldynamic.fw-popup-mode .sd-paneldynamic__panel-wrapper {
+  margin-bottom: var(--fw-spacing-sm);
+  position: relative;
+}
+
+/* Verstecke die Panel-Inhalte (Felder) - nur Titel zeigen */
+.sd-paneldynamic.fw-popup-mode .sd-panel__content {
+  display: none !important;
+}
+
+/* Panel-Header als kompakte Zeile stylen */
+.sd-paneldynamic.fw-popup-mode .sd-panel {
+  background: var(--fw-gray-50);
+  border: 1px solid var(--fw-gray-200);
+  border-radius: var(--fw-radius);
+  padding: var(--fw-spacing-md) var(--fw-spacing-lg);
+  padding-right: 60px; /* Platz für Remove Button */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sd-paneldynamic.fw-popup-mode .sd-panel__header {
+  padding: 0;
+  min-height: auto;
+}
+
+.sd-paneldynamic.fw-popup-mode .sd-panel__title {
+  font-size: var(--fw-font-size-base) !important;
+  font-weight: var(--fw-font-weight-medium) !important;
+  color: var(--fw-gray-900) !important;
+}
+
+/* Remove Button rechts positionieren */
+.sd-paneldynamic.fw-popup-mode .sd-paneldynamic__remove-btn {
+  position: absolute !important;
+  right: var(--fw-spacing-md) !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  background: var(--fw-error) !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 50% !important;
+  width: 32px !important;
+  height: 32px !important;
+  padding: 0 !important;
+  min-width: auto !important;
+}
+
+.sd-paneldynamic.fw-popup-mode .sd-paneldynamic__remove-btn:hover {
+  background: #dc2626 !important;
+}
+
+/* Custom Lösch-Button für kompakte Ansicht */
+.fw-delete-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+  padding: 4px 8px;
+  opacity: 0.6;
+  transition: all 0.2s ease;
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.fw-delete-btn:hover {
+  opacity: 1;
+  transform: translateY(-50%) scale(1.1);
+}
+
+/* Leere Liste Nachricht */
+.fw-container .sd-paneldynamic__placeholder {
+  text-align: center;
+  padding: var(--fw-spacing-xl);
+  color: var(--fw-gray-500);
+  font-style: italic;
+}
+
+/* ══════════════════════════════════════════════════════════
+   PREVIEW MODE - Zusammenfassung vor dem Absenden
+   Design wie im Screenshot: Karten pro Seite mit Bearbeiten-Button
+   ══════════════════════════════════════════════════════════ */
+
+/* Preview Container - grauer Hintergrund, KEINE Karte */
+.fw-container.fw-preview-mode {
+  padding: var(--fw-spacing-lg) !important;
+  background: var(--fw-gray-50) !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+}
+
+/* Body ohne Hintergrund */
+.fw-container.fw-preview-mode .sd-body {
+  background: transparent !important;
+}
+
+/* Der äußere Page-Container (transparent) */
+.fw-container.fw-preview-mode .sd-body > .sd-body__page {
+  background: transparent !important;
+  padding: 0 !important;
+}
+
+/* Jede Seite als SEPARATE Karte */
+.fw-container.fw-preview-mode .sd-page {
+  background: white !important;
+  border: 1px solid var(--fw-gray-200) !important;
+  border-radius: var(--fw-radius) !important;
+  padding: var(--fw-spacing-xl) !important;
+  margin-bottom: var(--fw-spacing-lg) !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Der äußere Row-Container - keine eigene Karte */
+.fw-container.fw-preview-mode .sd-row {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* Seiten-Header mit Titel und Edit-Button */
+.fw-container.fw-preview-mode .sd-page__header {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  padding-bottom: var(--fw-spacing-lg) !important;
+  margin-bottom: var(--fw-spacing-lg) !important;
+  border-bottom: 1px solid var(--fw-gray-100) !important;
+}
+
+.fw-container.fw-preview-mode .sd-page__title {
+  font-size: 1.125rem !important;
+  font-weight: var(--fw-font-weight-semibold) !important;
+  color: var(--fw-gray-900) !important;
+  margin: 0 !important;
+}
+
+/* Seiten-Beschreibung in Preview ausblenden */
+.fw-container.fw-preview-mode .sd-page__description {
+  display: none !important;
+}
+
+/* Edit Button - Bearbeiten */
+.fw-container.fw-preview-mode .sd-btn--action {
+  background: transparent !important;
+  color: var(--fw-primary) !important;
+  box-shadow: none !important;
+  font-size: var(--fw-font-size-sm) !important;
+  padding: var(--fw-spacing-sm) var(--fw-spacing-md) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  border: none !important;
+  cursor: pointer !important;
+}
+
+.fw-container.fw-preview-mode .sd-btn--action:hover {
+  background: var(--fw-primary-light) !important;
+}
+
+.fw-container.fw-preview-mode .sd-btn--action::before {
+  content: "✏️ ";
+}
+
+/* Frage Container ohne Rahmen */
+.fw-container.fw-preview-mode .sd-element--with-frame {
+  border: none !important;
+  box-shadow: none !important;
+  padding: var(--fw-spacing-sm) 0 !important;
+  background: transparent !important;
+}
+
+/* Frage-Titel (Label) - klein und grau */
+.fw-container.fw-preview-mode .sd-question__title {
+  font-size: var(--fw-font-size-sm) !important;
+  color: var(--fw-gray-500) !important;
+  font-weight: var(--fw-font-weight-normal) !important;
+  margin-bottom: var(--fw-spacing-xs) !important;
+}
+
+/* Required-Asterisk in Preview verstecken */
+.fw-container.fw-preview-mode .sd-question__required-text {
+  display: none !important;
+}
+
+/* Input-Felder in Preview - nur Wert anzeigen */
+.fw-container.fw-preview-mode .sd-input {
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+  font-size: var(--fw-font-size-base) !important;
+  color: var(--fw-gray-900) !important;
+  font-weight: var(--fw-font-weight-medium) !important;
+}
+
+.fw-container.fw-preview-mode .sd-dropdown {
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+}
+
+.fw-container.fw-preview-mode .sd-dropdown__value {
+  font-size: var(--fw-font-size-base) !important;
+  color: var(--fw-gray-900) !important;
+  font-weight: var(--fw-font-weight-medium) !important;
+}
+
+/* Dropdown-Pfeil verstecken */
+.fw-container.fw-preview-mode .sd-dropdown__filter-string-input,
+.fw-container.fw-preview-mode .sd-dropdown__chevron-button {
+  display: none !important;
+}
+
+/* Panel Dynamic in Preview - Kompakte Tags */
+.fw-container.fw-preview-mode .sd-paneldynamic__panels-container {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: var(--fw-spacing-sm) !important;
+}
+
+.fw-container.fw-preview-mode .sd-paneldynamic__panel-wrapper .sd-panel {
+  background: var(--fw-gray-100) !important;
+  border: none !important;
+  border-radius: 20px !important;
+  padding: var(--fw-spacing-sm) var(--fw-spacing-md) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+}
+
+.fw-container.fw-preview-mode .sd-paneldynamic__panel-wrapper .sd-panel__header {
+  padding: 0 !important;
+  min-height: auto !important;
+}
+
+.fw-container.fw-preview-mode .sd-paneldynamic__panel-wrapper .sd-panel__title {
+  font-size: var(--fw-font-size-sm) !important;
+  font-weight: var(--fw-font-weight-medium) !important;
+  color: var(--fw-gray-700) !important;
+}
+
+/* Panel Content in Preview verstecken (nur Titel zeigen) */
+.fw-container.fw-preview-mode .sd-paneldynamic__panel-wrapper .sd-panel__content {
+  display: none !important;
+}
+
+/* Remove/Delete Buttons in Preview verstecken */
+.fw-container.fw-preview-mode .sd-paneldynamic__remove-btn,
+.fw-container.fw-preview-mode .fw-delete-btn,
+.fw-container.fw-preview-mode .fw-add-button-container,
+.fw-container.fw-preview-mode .sd-paneldynamic__add-btn {
+  display: none !important;
+}
+
+/* Radio/Checkbox - nur ausgewählte als Tag anzeigen */
+.fw-container.fw-preview-mode .sd-selectbase__item .sd-item__decorator {
+  display: none !important;
+}
+
+.fw-container.fw-preview-mode .sd-selectbase__item--checked .sd-selectbase__control-label {
+  background: var(--fw-gray-100) !important;
+  padding: var(--fw-spacing-xs) var(--fw-spacing-md) !important;
+  border-radius: 16px !important;
+  font-size: var(--fw-font-size-sm) !important;
+  color: var(--fw-gray-700) !important;
+}
+
+.fw-container.fw-preview-mode .sd-selectbase__item:not(.sd-selectbase__item--checked) {
+  display: none !important;
+}
+
+/* Navigation Buttons in Preview */
+.fw-container.fw-preview-mode .sd-navigation {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: var(--fw-spacing-md) !important;
+  margin-top: var(--fw-spacing-xl) !important;
+}
+
+.fw-container.fw-preview-mode .sd-navigation__complete-btn {
+  width: 100% !important;
+  background: var(--fw-primary) !important;
+  color: white !important;
+  padding: var(--fw-spacing-lg) var(--fw-spacing-xl) !important;
+  font-size: var(--fw-font-size-base) !important;
+  font-weight: var(--fw-font-weight-semibold) !important;
+  border-radius: var(--fw-radius) !important;
+}
+
+.fw-container.fw-preview-mode .sd-navigation__complete-btn::before {
+  content: "✓ ";
+}
+
+.fw-container.fw-preview-mode .sd-navigation__prev-btn {
+  width: 100% !important;
+  background: white !important;
+  border: 1px solid var(--fw-gray-300) !important;
+  color: var(--fw-gray-700) !important;
+  padding: var(--fw-spacing-md) var(--fw-spacing-xl) !important;
+}
+
+.fw-container.fw-preview-mode .sd-navigation__prev-btn::before {
+  content: "← ";
 }

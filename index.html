@@ -13,6 +13,7 @@
     // 3. Widget starten
     console.log('Starte Widget...');
     initForm('form-container', cpApplicationTutor, {
+      // theme: { ... } // Siehe README für Theme-Optionen
       onComplete: (data) => {
         console.log('Formular abgesendet:', data);
         alert('Bewerbung erfolgreich versendet!');

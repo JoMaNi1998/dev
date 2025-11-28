@@ -18,6 +18,14 @@ Serializer.addProperty("question", {
   visibleIndex: 3
 });
 
+// Custom Property "popupMode" für paneldynamic
+Serializer.addProperty("paneldynamic", {
+  name: "popupMode",
+  type: "boolean",
+  default: false,
+  category: "general"
+});
+
 /**
  * Zeigt ein Modal mit Hilfetext an
  */
@@ -55,23 +63,304 @@ function showHelpModal(title, text) {
 }
 
 /**
- * Wendet Theme-Farben als CSS-Variablen an
+ * Erstellt das Dynamic Popup Modal (einmalig)
  */
-function applyTheme(theme = {}) {
-  const root = document.documentElement;
+function createDynamicModal() {
+  if (document.getElementById('fw-dynamic-modal')) return;
+
+  const modalHtml = `
+    <dialog id="fw-dynamic-modal" class="fw-modal">
+      <div class="fw-modal-header">
+        <span id="fw-dynamic-title">Eintrag hinzufügen</span>
+        <button id="fw-dynamic-close" class="fw-modal-close">&times;</button>
+      </div>
+      <div id="fw-dynamic-body" class="fw-popup-survey-container"></div>
+      <div class="fw-modal-actions">
+        <button class="fw-btn-secondary" id="fw-dynamic-cancel">Abbrechen</button>
+        <button class="fw-btn-primary" id="fw-dynamic-save">Hinzufügen</button>
+      </div>
+    </dialog>
+  `;
+  document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+  const modal = document.getElementById('fw-dynamic-modal');
+
+  // Close Button
+  document.getElementById('fw-dynamic-close').onclick = () => modal.close();
+  document.getElementById('fw-dynamic-cancel').onclick = () => modal.close();
+
+  // Click außerhalb schließt Modal
+  modal.addEventListener('click', (e) => {
+    const rect = modal.getBoundingClientRect();
+    if (e.clientY < rect.top || e.clientY > rect.bottom ||
+        e.clientX < rect.left || e.clientX > rect.right) {
+      modal.close();
+    }
+  });
+}
+
+/**
+ * Öffnet das Popup für einen neuen Panel-Eintrag
+ */
+function openDynamicPopup(question) {
+  createDynamicModal();
+
+  const modal = document.getElementById('fw-dynamic-modal');
+  const bodyEl = document.getElementById('fw-dynamic-body');
+  const titleEl = document.getElementById('fw-dynamic-title');
+  const saveBtn = document.getElementById('fw-dynamic-save');
+
+  // Titel setzen (Emoji entfernen falls vorhanden)
+  const titleText = (question.panelAddText || 'Eintrag hinzufügen').replace(/^[\u{1F300}-\u{1F9FF}]\s*/u, '');
+  titleEl.innerText = titleText;
+
+  // Mini-Survey Config aus den templateElements erstellen
+  const elements = [];
+  for (let i = 0; i < question.templateElements.length; i++) {
+    const el = question.templateElements[i];
+
+    // Manuell die wichtigsten Properties extrahieren
+    const json = {
+      type: el.getType(),
+      name: el.name,
+      title: el.title || el.name,
+      isRequired: el.isRequired || false
+    };
+
+    // Choices für Dropdowns/Radiobuttons
+    if (el.choices && el.choices.length > 0) {
+      json.choices = el.choices.map(c => {
+        if (typeof c === 'object' && c !== null) {
+          return { value: c.value, text: c.text || c.value };
+        }
+        return c;
+      });
+    }
+
+    // Placeholder
+    if (el.placeholder) {
+      json.placeholder = el.placeholder;
+    }
+
+    elements.push(json);
+  }
+
+  console.log('[FormWidget] Popup elements:', elements);
+
+  const popupConfig = {
+    elements: elements,
+    showNavigationButtons: false,
+    showQuestionNumbers: 'off',
+    questionErrorLocation: 'bottom'
+  };
+
+  // Mini-Survey erstellen und rendern
+  const popupSurvey = new SurveyModel(popupConfig);
+
+  // Container leeren und neu rendern
+  bodyEl.innerHTML = '';
+
+  // Wrapper für das Survey erstellen
+  const surveyWrapper = document.createElement('div');
+  surveyWrapper.className = 'fw-popup-survey';
+  bodyEl.appendChild(surveyWrapper);
+
+  // Survey rendern
+  popupSurvey.render(surveyWrapper);
+
+  console.log('[FormWidget] Popup survey rendered:', popupSurvey.getAllQuestions().length, 'questions');
+
+  // Save Button Handler (neu binden)
+  const newSaveBtn = saveBtn.cloneNode(true);
+  saveBtn.parentNode.replaceChild(newSaveBtn, saveBtn);
+
+  newSaveBtn.onclick = () => {
+    // Validierung
+    const isValid = popupSurvey.validate(true, true);
+
+    if (isValid) {
+      // Daten holen und zur Liste hinzufügen
+      const newData = popupSurvey.data;
+      const currentValue = question.value || [];
+      question.value = [...currentValue, newData];
+
+      modal.close();
+    }
+  };
+
+  modal.showModal();
+}
+
+/**
+ * Fügt den Custom Add-Button für paneldynamic mit popupMode hinzu
+ */
+function setupDynamicPopupButton(question, htmlElement) {
+  // Prüfen ob Button schon existiert
+  if (htmlElement.querySelector('.fw-add-button-container')) return;
+
+  // Popup-Mode Klasse auf das paneldynamic Element setzen
+  const panelDynamic = htmlElement.querySelector('.sd-paneldynamic');
+  if (panelDynamic) {
+    panelDynamic.classList.add('fw-popup-mode');
+  }
+
+  // Lösch-Buttons zu bestehenden Panels hinzufügen
+  addDeleteButtonsToPanels(question, htmlElement);
+
+  // Bei Änderungen der Panel-Anzahl neu rendern (MutationObserver)
+  const observer = new MutationObserver(() => {
+    addDeleteButtonsToPanels(question, htmlElement);
+  });
+  const panelsContainer = htmlElement.querySelector('.sd-paneldynamic__panels-container');
+  if (panelsContainer) {
+    observer.observe(panelsContainer, { childList: true, subtree: true });
+  }
+
+  // Button Container erstellen
+  const btnContainer = document.createElement('div');
+  btnContainer.className = 'fw-add-button-container';
+  btnContainer.innerHTML = `
+    <button type="button" class="fw-add-btn">
+      ${question.panelAddText || '➕ Eintrag hinzufügen'}
+    </button>
+  `;
+
+  // Click Handler
+  btnContainer.querySelector('button').onclick = () => openDynamicPopup(question);
+
+  // Am Ende der Frage einfügen
+  const panelRoot = panelDynamic || htmlElement;
+  panelRoot.appendChild(btnContainer);
+}
+
+/**
+ * Fügt Lösch-Buttons zu den Panel-Einträgen hinzu
+ */
+function addDeleteButtonsToPanels(question, htmlElement) {
+  const panels = htmlElement.querySelectorAll('.sd-paneldynamic__panel-wrapper');
+
+  panels.forEach((panel, index) => {
+    // Prüfen ob Button schon existiert
+    if (panel.querySelector('.fw-delete-btn')) return;
+
+    const deleteBtn = document.createElement('button');
+    deleteBtn.type = 'button';
+    deleteBtn.className = 'fw-delete-btn';
+    deleteBtn.innerHTML = '🗑️';
+    deleteBtn.title = 'Entfernen';
+    deleteBtn.onclick = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      question.removePanel(index);
+    };
+
+    // Button zum Panel hinzufügen
+    const sdPanel = panel.querySelector('.sd-panel');
+    if (sdPanel) {
+      sdPanel.appendChild(deleteBtn);
+    }
+  });
+}
+
+/**
+ * Styled die Preview-Ansicht als Karten-Layout (wie im Screenshot)
+ * Jede Sektion wird als separate Karte mit Edit-Button im Header dargestellt
+ */
+function stylePreviewAsCards(container, survey) {
+  // Klasse für Preview-Styling hinzufügen
+  container.classList.add('fw-preview-mode');
+
+  // Warte kurz bis DOM vollständig gerendert ist
+  setTimeout(() => {
+    // Finde alle Seiten in der Preview
+    const pages = container.querySelectorAll('.sd-page');
+
+    console.log('[FormWidget] Gefundene Sektionen:', pages.length);
+
+    pages.forEach((page) => {
+      // Prüfen ob schon gestyled
+      if (page.classList.contains('fw-preview-card')) return;
+      page.classList.add('fw-preview-card');
+
+      // Header finden
+      const pageHeader = page.querySelector('.sd-page__header');
+      const description = page.querySelector('.sd-page__description');
+
+      // Beschreibung verstecken
+      if (description) {
+        description.style.display = 'none';
+      }
+
+      // Edit-Button in den Header verschieben
+      const editBtn = page.querySelector('.sd-btn--action');
+
+      if (pageHeader && editBtn) {
+        // Header als Flex-Container stylen
+        pageHeader.style.display = 'flex';
+        pageHeader.style.justifyContent = 'space-between';
+        pageHeader.style.alignItems = 'center';
+        pageHeader.style.paddingBottom = '1rem';
+        pageHeader.style.marginBottom = '1rem';
+        pageHeader.style.borderBottom = '1px solid #f3f4f6';
+
+        // Button in Header verschieben
+        if (!pageHeader.contains(editBtn)) {
+          pageHeader.appendChild(editBtn);
+        }
+      }
+
+      // Verstecke Add/Delete Buttons
+      page.querySelectorAll('.fw-add-button-container, .sd-paneldynamic__add-btn, .fw-delete-btn, .sd-paneldynamic__remove-btn')
+        .forEach(btn => btn.style.display = 'none');
+    });
+
+    console.log('[FormWidget] Preview-Karten gestyled');
+  }, 100);
+}
+
+/**
+ * Wendet Theme-Einstellungen als CSS-Variablen auf den Container an (nicht global!)
+ * Ermöglicht Corporate Identity Anpassung für verschiedene Kunden-Webseiten
+ */
+function applyTheme(container, theme = {}) {
   const defaults = {
+    // 1. Farben (Branding)
     primary: '#2a667b',
     primaryHover: '#78b8bf',
     primaryLight: '#e6f2f4',
-    primaryDark: '#1e4a56'
+    primaryDark: '#1e4a56',
+
+    // 2. Form (Stil: Modern vs. Klassisch)
+    radius: '12px',           // Standard: Leicht abgerundet
+
+    // 3. Typografie (Integration)
+    fontFamily: 'inherit',    // Standard: Nimm die Font der Webseite! (Best Practice)
+
+    // 4. Farben (Dark Mode / Kontrast)
+    background: '#ffffff',
+    text: '#111827',
+    border: '#e5e7eb'
   };
 
-  const colors = { ...defaults, ...theme };
+  const s = { ...defaults, ...theme };
 
-  root.style.setProperty('--fw-primary', colors.primary);
-  root.style.setProperty('--fw-primary-hover', colors.primaryHover);
-  root.style.setProperty('--fw-primary-light', colors.primaryLight);
-  root.style.setProperty('--fw-primary-dark', colors.primaryDark);
+  // CSS Variablen direkt auf Container setzen -> kein Konflikt mit Host-Seite
+  const style = container.style;
+
+  // Branding Farben
+  style.setProperty('--fw-primary', s.primary);
+  style.setProperty('--fw-primary-hover', s.primaryHover);
+  style.setProperty('--fw-primary-light', s.primaryLight);
+  style.setProperty('--fw-primary-dark', s.primaryDark);
+
+  // Form & Typografie
+  style.setProperty('--fw-radius', s.radius);
+  style.setProperty('--fw-font-family', s.fontFamily);
+
+  // Dark Mode / Kontrast
+  style.setProperty('--fw-bg', s.background);
+  style.setProperty('--fw-text', s.text);
+  style.setProperty('--fw-border', s.border);
 }
 
 /**
@@ -91,10 +380,8 @@ export function initForm(containerId, formConfig, options = {}) {
   // Container-Klasse hinzufügen (für Widget-Styles)
   container.classList.add('fw-container');
 
-  // Theme anwenden
-  if (options.theme) {
-    applyTheme(options.theme);
-  }
+  // Theme anwenden (immer, damit Defaults gesetzt werden)
+  applyTheme(container, options.theme || {});
 
   // Survey Model erstellen (SurveyModel direkt mit JSON)
   const survey = new SurveyModel(formConfig);
@@ -117,6 +404,26 @@ export function initForm(containerId, formConfig, options = {}) {
       innerCss: "fw-help-icon",
       action: () => showHelpModal(opts.question.title, opts.question.helpText)
     });
+  });
+
+  // Dynamic Popup für paneldynamic mit popupMode
+  survey.onAfterRenderQuestion.add((sender, opts) => {
+    const question = opts.question;
+
+    // Nur für paneldynamic mit popupMode: true
+    if (question.getType() === 'paneldynamic' && question.popupMode) {
+      setupDynamicPopupButton(question, opts.htmlElement);
+    }
+  });
+
+  // Preview-Mode: Karten-Layout für jede Seite
+  survey.onShowingPreview.add((sender) => {
+    console.log('[FormWidget] Preview-Modus aktiviert');
+
+    // Kurz warten bis DOM gerendert ist, dann Karten-Layout anwenden
+    setTimeout(() => {
+      stylePreviewAsCards(container, sender);
+    }, 100);
   });
 
   // Event: Formular abgeschlossen

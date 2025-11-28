@@ -16,9 +16,9 @@ export const cpApplicationTutor = {
 
   // Zusammenfassung vor dem Absenden
   showPreviewBeforeComplete: "showAllQuestions",
-  previewText: "Angaben prüfen",
+  previewText: "Zusammenfassung Ihrer Angaben",
   editText: "Bearbeiten",
-  completeText: "Jetzt verbindlich absenden",
+  completeText: "Endgültig absenden",
 
   // Completion
   completedHtml: `
@@ -86,10 +86,15 @@ export const cpApplicationTutor = {
           type: "paneldynamic",
           name: "subjects",
           title: "Fächer hinzufügen",
-          panelAddText: "Fach hinzufügen",
+          panelAddText: "📚 Fach hinzufügen",
           panelRemoveText: "Entfernen",
-          minPanelCount: 1,
+          minPanelCount: 0,
           maxPanelCount: 10,
+          // Custom Popup Mode
+          popupMode: true,
+          allowAddPanel: false,
+          noEntriesText: "Noch keine Fächer eingetragen",
+          templateTitle: "{panel.subject} • {panel.grade_from}. - {panel.grade_to}. Klasse",
           templateElements: [
             {
               type: "dropdown",
@@ -158,10 +163,15 @@ export const cpApplicationTutor = {
           type: "paneldynamic",
           name: "experiences",
           title: "Erfahrungen hinzufügen",
-          panelAddText: "Erfahrung hinzufügen",
+          panelAddText: "💼 Erfahrung hinzufügen",
           panelRemoveText: "Entfernen",
-          minPanelCount: 1,
+          minPanelCount: 0,
           maxPanelCount: 10,
+          // Custom Popup Mode
+          popupMode: true,
+          allowAddPanel: false,
+          noEntriesText: "Noch keine Erfahrungen eingetragen",
+          templateTitle: "{panel.experience_type} • {panel.experience_location} • {panel.experience_duration}",
           templateElements: [
             {
               type: "dropdown",
@@ -222,10 +232,15 @@ export const cpApplicationTutor = {
           type: "paneldynamic",
           name: "qualifications",
           title: "Qualifikationen hinzufügen",
-          panelAddText: "Qualifikation hinzufügen",
+          panelAddText: "🎓 Qualifikation hinzufügen",
           panelRemoveText: "Entfernen",
-          minPanelCount: 1,
+          minPanelCount: 0,
           maxPanelCount: 10,
+          // Custom Popup Mode
+          popupMode: true,
+          allowAddPanel: false,
+          noEntriesText: "Noch keine Qualifikationen eingetragen",
+          templateTitle: "{panel.qualification_type} • {panel.qualification_location} • {panel.qualification_duration}",
           templateElements: [
             {
               type: "dropdown",
