@@ -263,11 +263,64 @@ function addDeleteButtonsToPanels(question, htmlElement) {
 }
 
 /**
- * Aktiviert den Preview-Modus (CSS übernimmt das Styling)
+ * Aktiviert den Preview-Modus und styled die Zusammenfassung
  */
-function enablePreviewMode(container) {
+function enablePreviewMode(container, survey) {
   container.classList.add('fw-preview-mode');
+
+  // Warte bis DOM gerendert ist, dann style anpassen
+  setTimeout(() => {
+    stylePreviewPage(container, survey);
+  }, 100);
+
   console.log('[FormWidget] Preview-Modus aktiviert');
+}
+
+/**
+ * Styled die Preview-Seite mit Karten-Layout
+ */
+function stylePreviewPage(container, survey) {
+  // 1. Beschreibungen verstecken
+  container.querySelectorAll('.sd-page__description').forEach(el => {
+    el.style.display = 'none';
+  });
+
+  // 2. "hinzufügen" Titel verstecken
+  container.querySelectorAll('.sd-question__title').forEach(el => {
+    const text = el.textContent.toLowerCase();
+    if (text.includes('hinzufügen') || text.includes('gewählt')) {
+      el.closest('.sd-question__header')?.style.setProperty('display', 'none', 'important');
+    }
+  });
+
+  // 3. Hilfe-Buttons verstecken
+  container.querySelectorAll('.fw-help-icon, .sd-action-bar-item, [title="Hilfe anzeigen"]').forEach(el => {
+    el.style.display = 'none';
+  });
+
+  // 4. Jede Seite als Karte stylen mit Edit-Button oben rechts
+  container.querySelectorAll('.sd-page').forEach((page, index) => {
+    if (page.classList.contains('fw-card-styled')) return;
+    page.classList.add('fw-card-styled');
+
+    const header = page.querySelector('.sd-page__header');
+    const title = page.querySelector('.sd-page__title');
+    const editBtn = page.querySelector('.sd-btn--action');
+
+    if (header && title && editBtn) {
+      // Header stylen
+      header.style.cssText = 'display: flex !important; justify-content: space-between !important; align-items: center !important; padding-bottom: 16px !important; margin-bottom: 16px !important; border-bottom: 1px solid #f1f5f9 !important;';
+
+      // Titel stylen
+      title.style.cssText = 'font-size: 1.25rem !important; font-weight: 600 !important; color: #2a667b !important; margin: 0 !important; padding: 0 !important; border: none !important;';
+
+      // Edit-Button stylen
+      editBtn.innerHTML = '✏️ Bearbeiten';
+      editBtn.style.cssText = 'position: static !important; background: transparent !important; color: #4b5563 !important; border: 1px solid #d1d5db !important; padding: 6px 16px !important; font-size: 0.85rem !important; border-radius: 6px !important; cursor: pointer !important; box-shadow: none !important;';
+    }
+  });
+
+  console.log('[FormWidget] Preview gestyled');
 }
 
 /**
@@ -378,7 +431,7 @@ export function initForm(containerId, formConfig, options = {}) {
 
   // Preview-Mode aktivieren
   survey.onShowingPreview.add((sender) => {
-    enablePreviewMode(container);
+    enablePreviewMode(container, sender);
   });
 
   // Preview-Mode deaktivieren wenn man "Bearbeiten" klickt

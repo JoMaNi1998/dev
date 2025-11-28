@@ -641,7 +641,8 @@
 }
 
 /* 2. Jede Seite wird zur "Karte" (Weiße Box) */
-.fw-container.fw-preview-mode .sd-page {
+.fw-container.fw-preview-mode .sd-page,
+.fw-container.fw-preview-mode .fw-card {
   background: white !important;
   border-radius: 12px !important;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05) !important;
@@ -651,31 +652,59 @@
   position: relative !important;
 }
 
-/* 3. Header der Karte (Titel) */
-.fw-container.fw-preview-mode .sd-page__title {
-  font-size: 1.25rem !important;
-  color: var(--fw-primary) !important;
-  margin-bottom: 1.5rem !important;
-  padding-bottom: 1rem !important;
+/* Header-Content Wrapper */
+.fw-container.fw-preview-mode .fw-header-content {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  width: 100% !important;
+  padding-bottom: 16px !important;
+  margin-bottom: 16px !important;
   border-bottom: 1px solid #f1f5f9 !important;
 }
 
-/* 4. Der "Bearbeiten" Button - Oben Rechts positioniert */
+.fw-container.fw-preview-mode .fw-header-content .sd-page__title {
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+}
+
+/* 3. Header der Karte (Titel) - GROSS & FETT als Überschrift */
+.fw-container.fw-preview-mode .sd-page__title {
+  font-size: 1.5rem !important;
+  font-weight: 700 !important;
+  color: var(--fw-gray-900) !important;
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
+  border-bottom: none !important;
+}
+
+/* Seiten-Header als Flex-Container */
+.fw-container.fw-preview-mode .sd-page__header {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  padding-bottom: 1rem !important;
+  margin-bottom: 1.5rem !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+}
+
+/* 4. Der "Bearbeiten" Button - Im Header rechts */
 .fw-container.fw-preview-mode .sd-page .sd-btn--action {
-  position: absolute !important;
-  top: 24px !important;
-  right: 24px !important;
+  position: static !important;
   background: transparent !important;
-  color: var(--fw-gray-600) !important;
+  color: var(--fw-primary) !important;
   border: 1px solid var(--fw-gray-300) !important;
-  padding: 6px 16px !important;
-  font-size: 0.85rem !important;
+  padding: 8px 16px !important;
+  font-size: 0.875rem !important;
   box-shadow: none !important;
-  border-radius: 6px !important;
+  border-radius: 8px !important;
+  cursor: pointer !important;
+  flex-shrink: 0 !important;
 }
 
 .fw-container.fw-preview-mode .sd-page .sd-btn--action:hover {
-  background: var(--fw-gray-50) !important;
+  background: var(--fw-primary-light) !important;
   color: var(--fw-primary) !important;
   border-color: var(--fw-primary) !important;
 }
@@ -763,22 +792,55 @@
   display: none !important;
 }
 
-/* 8. Radio/Checkbox - nur ausgewählte als Tag anzeigen */
+/* 8. Radio/Checkbox - nur ausgewählte anzeigen */
 .fw-container.fw-preview-mode .sd-selectbase__item .sd-item__decorator {
   display: none !important;
 }
 
+/* Nicht-ausgewählte Optionen verstecken */
+.fw-container.fw-preview-mode .sd-selectbase__item:not(.sd-selectbase__item--checked) {
+  display: none !important;
+}
+
+/* Ausgewählte Option als fetten Text anzeigen */
+.fw-container.fw-preview-mode .sd-selectbase__item--checked {
+  display: block !important;
+}
+
 .fw-container.fw-preview-mode .sd-selectbase__item--checked .sd-selectbase__control-label {
+  font-weight: 600 !important;
+  color: var(--fw-gray-900) !important;
+  font-size: 1rem !important;
+  background: transparent !important;
+  padding: 0 !important;
+  border: none !important;
+  border-radius: 0 !important;
+}
+
+/* Checkbox mit mehreren Optionen (Mobilität) als Tags */
+.fw-container.fw-preview-mode .sd-checkbox .sd-selectbase__item--checked .sd-selectbase__control-label {
   background: #f1f5f9 !important;
   padding: 6px 16px !important;
   border-radius: 20px !important;
   font-size: 0.9rem !important;
   color: var(--fw-gray-700) !important;
   border: 1px solid #e2e8f0 !important;
+  font-weight: 500 !important;
+  display: inline-block !important;
+  margin-right: 8px !important;
+  margin-bottom: 8px !important;
 }
 
-.fw-container.fw-preview-mode .sd-selectbase__item:not(.sd-selectbase__item--checked) {
-  display: none !important;
+/* Datenschutz Checkbox - zeige "Ja" statt langen Text */
+.fw-container.fw-preview-mode .sd-question[data-name="privacy_accepted"] .sd-selectbase__item--checked .sd-selectbase__control-label {
+  font-size: 0 !important;
+}
+
+.fw-container.fw-preview-mode .sd-question[data-name="privacy_accepted"] .sd-selectbase__item--checked .sd-selectbase__control-label::after {
+  content: "Ja";
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+  color: var(--fw-gray-900) !important;
 }
 
 /* Verstecke alles, was in der Zusammenfassung stört */
@@ -789,7 +851,16 @@
 .fw-container.fw-preview-mode .fw-add-button-container,
 .fw-container.fw-preview-mode .sd-paneldynamic__add-btn,
 .fw-container.fw-preview-mode .sd-dropdown__chevron-button,
-.fw-container.fw-preview-mode .sd-dropdown__filter-string-input {
+.fw-container.fw-preview-mode .sd-dropdown__filter-string-input,
+.fw-container.fw-preview-mode .fw-help-icon,
+.fw-container.fw-preview-mode .sd-action-bar,
+.fw-container.fw-preview-mode [title="Hilfe anzeigen"],
+.fw-container.fw-preview-mode .sd-paneldynamic__question-title {
+  display: none !important;
+}
+
+/* Paneldynamic Frage-Titel verstecken (z.B. "Fächer hinzufügen") */
+.fw-container.fw-preview-mode .sd-paneldynamic > .sd-question__header {
   display: none !important;
 }
 
