@@ -1,44 +1,25 @@
 /**
- * Form Widget
+ * Form Widget - Generic Engine
  * Generisches, einbettbares Formular-Widget basierend auf SurveyJS
  */
 
-// Styles (werden automatisch gebündelt)
+import { Model, Serializer } from 'survey-core';
+import 'survey-jquery';
+import $ from 'jquery';
+
+// SurveyJS Standard-CSS importieren (Vite bündelt das)
 import 'survey-jquery/defaultV2.min.css';
+
+// Widget CSS
 import './styles/widget.css';
 
-// Config
-import { cpApplicationTutor } from './config/tutor-application.js';
-
-// jQuery und SurveyJS werden dynamisch geladen
-let $, Model, Serializer, dependenciesLoaded = false;
-
-async function loadDependencies() {
-  if (dependenciesLoaded) return;
-
-  // jQuery zuerst laden und global machen
-  const jQueryModule = await import('jquery');
-  $ = jQueryModule.default;
-  window.jQuery = window.$ = $;
-
-  // survey-core für Model und Serializer
-  const surveyCore = await import('survey-core');
-  Model = surveyCore.Model;
-  Serializer = surveyCore.Serializer;
-
-  // survey-jquery für jQuery Plugin (muss nach jQuery global ist)
-  await import('survey-jquery');
-
-  // Custom Property registrieren
-  Serializer.addProperty("question", {
-    name: "helpText",
-    type: "text",
-    category: "general",
-    visibleIndex: 3
-  });
-
-  dependenciesLoaded = true;
-}
+// Custom Property "helpText" für Fragen registrieren
+Serializer.addProperty("question", {
+  name: "helpText",
+  type: "text",
+  category: "general",
+  visibleIndex: 3
+});
 
 /**
  * Zeigt ein Modal mit Hilfetext an
@@ -100,27 +81,25 @@ function applyTheme(theme = {}) {
 /**
  * Initialisiert das Formular-Widget
  * @param {string} containerId - ID des Container-Elements
+ * @param {Object} formConfig - Das SurveyJS JSON Config-Objekt
  * @param {Object} options - Optionale Konfiguration
  * @param {Object} options.theme - Farb-Theme { primary, primaryHover, primaryLight, primaryDark }
  * @param {Function} options.onComplete - Callback bei Formular-Abschluss
- * @returns {Promise<Model>} - Survey-Instanz für externe Kontrolle
+ * @returns {Model} - Survey-Instanz für externe Kontrolle
  */
-export async function initForm(containerId, options = {}) {
+export function initForm(containerId, formConfig, options = {}) {
   const container = document.getElementById(containerId);
   if (!container) {
     console.error(`[FormWidget] Container #${containerId} nicht gefunden.`);
     return null;
   }
 
-  // Dependencies laden
-  await loadDependencies();
-
   // Theme anwenden
   if (options.theme) {
     applyTheme(options.theme);
   }
 
-  const survey = new Model(cpApplicationTutor);
+  const survey = new Model(formConfig);
 
   // HTML in Beschreibungen rendern
   survey.onTextMarkdown.add((survey, options) => {
@@ -159,8 +138,10 @@ export async function initForm(containerId, options = {}) {
   });
 
   // Mit jQuery rendern
-  $(`#${containerId}`).Survey({ model: survey });
-  console.log('[FormWidget] Widget initialisiert');
+  $(function() {
+    $(`#${containerId}`).Survey({ model: survey });
+    console.log('[FormWidget] Widget initialisiert');
+  });
 
   return survey;
 }
