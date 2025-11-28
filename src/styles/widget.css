@@ -64,6 +64,19 @@
 }
 
 /* ══════════════════════════════════════════════════════════
+   WIDGET CONTAINER
+   ══════════════════════════════════════════════════════════ */
+.fw-container {
+  max-width: 800px;
+  margin: 0 auto;
+  background: white;
+  min-height: 400px;
+  box-shadow: var(--fw-shadow);
+  border-radius: var(--fw-radius);
+  font-family: var(--fw-font-family);
+}
+
+/* ══════════════════════════════════════════════════════════
    MODAL STYLES
    ══════════════════════════════════════════════════════════ */
 .fw-modal {

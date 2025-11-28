@@ -88,6 +88,9 @@ export function initForm(containerId, formConfig, options = {}) {
     return null;
   }
 
+  // Container-Klasse hinzufügen (für Widget-Styles)
+  container.classList.add('fw-container');
+
   // Theme anwenden
   if (options.theme) {
     applyTheme(options.theme);
