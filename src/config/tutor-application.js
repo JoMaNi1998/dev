@@ -16,7 +16,7 @@ export const cpApplicationTutor = {
 
   // Zusammenfassung vor dem Absenden
   showPreviewBeforeComplete: "showAllQuestions",
-  previewText: "Zusammenfassung Ihrer Angaben",
+  previewText: "Zusammenfassung anzeigen",
   editText: "Bearbeiten",
   completeText: "Endgültig absenden",
 
@@ -94,7 +94,7 @@ export const cpApplicationTutor = {
           popupMode: true,
           allowAddPanel: false,
           noEntriesText: "Noch keine Fächer eingetragen",
-          templateTitle: "{panel.subject} • {panel.grade_from}. - {panel.grade_to}. Klasse",
+          templateTitle: "{panel.subject} ({panel.grade_from}.-{panel.grade_to}. Kl.)",
           templateElements: [
             {
               type: "dropdown",
@@ -171,7 +171,7 @@ export const cpApplicationTutor = {
           popupMode: true,
           allowAddPanel: false,
           noEntriesText: "Noch keine Erfahrungen eingetragen",
-          templateTitle: "{panel.experience_type} • {panel.experience_location} • {panel.experience_duration}",
+          templateTitle: "{panel.experience_type} • {panel.experience_location}",
           templateElements: [
             {
               type: "dropdown",
@@ -240,7 +240,7 @@ export const cpApplicationTutor = {
           popupMode: true,
           allowAddPanel: false,
           noEntriesText: "Noch keine Qualifikationen eingetragen",
-          templateTitle: "{panel.qualification_type} • {panel.qualification_location} • {panel.qualification_duration}",
+          templateTitle: "{panel.qualification_type} • {panel.qualification_location}",
           templateElements: [
             {
               type: "dropdown",

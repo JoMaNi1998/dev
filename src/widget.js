@@ -263,59 +263,19 @@ function addDeleteButtonsToPanels(question, htmlElement) {
 }
 
 /**
- * Styled die Preview-Ansicht als Karten-Layout (wie im Screenshot)
- * Jede Sektion wird als separate Karte mit Edit-Button im Header dargestellt
+ * Aktiviert den Preview-Modus (CSS übernimmt das Styling)
  */
-function stylePreviewAsCards(container, survey) {
-  // Klasse für Preview-Styling hinzufügen
+function enablePreviewMode(container) {
   container.classList.add('fw-preview-mode');
+  console.log('[FormWidget] Preview-Modus aktiviert');
+}
 
-  // Warte kurz bis DOM vollständig gerendert ist
-  setTimeout(() => {
-    // Finde alle Seiten in der Preview
-    const pages = container.querySelectorAll('.sd-page');
-
-    console.log('[FormWidget] Gefundene Sektionen:', pages.length);
-
-    pages.forEach((page) => {
-      // Prüfen ob schon gestyled
-      if (page.classList.contains('fw-preview-card')) return;
-      page.classList.add('fw-preview-card');
-
-      // Header finden
-      const pageHeader = page.querySelector('.sd-page__header');
-      const description = page.querySelector('.sd-page__description');
-
-      // Beschreibung verstecken
-      if (description) {
-        description.style.display = 'none';
-      }
-
-      // Edit-Button in den Header verschieben
-      const editBtn = page.querySelector('.sd-btn--action');
-
-      if (pageHeader && editBtn) {
-        // Header als Flex-Container stylen
-        pageHeader.style.display = 'flex';
-        pageHeader.style.justifyContent = 'space-between';
-        pageHeader.style.alignItems = 'center';
-        pageHeader.style.paddingBottom = '1rem';
-        pageHeader.style.marginBottom = '1rem';
-        pageHeader.style.borderBottom = '1px solid #f3f4f6';
-
-        // Button in Header verschieben
-        if (!pageHeader.contains(editBtn)) {
-          pageHeader.appendChild(editBtn);
-        }
-      }
-
-      // Verstecke Add/Delete Buttons
-      page.querySelectorAll('.fw-add-button-container, .sd-paneldynamic__add-btn, .fw-delete-btn, .sd-paneldynamic__remove-btn')
-        .forEach(btn => btn.style.display = 'none');
-    });
-
-    console.log('[FormWidget] Preview-Karten gestyled');
-  }, 100);
+/**
+ * Deaktiviert den Preview-Modus
+ */
+function disablePreviewMode(container) {
+  container.classList.remove('fw-preview-mode');
+  console.log('[FormWidget] Preview-Modus deaktiviert');
 }
 
 /**
@@ -416,14 +376,16 @@ export function initForm(containerId, formConfig, options = {}) {
     }
   });
 
-  // Preview-Mode: Karten-Layout für jede Seite
+  // Preview-Mode aktivieren
   survey.onShowingPreview.add((sender) => {
-    console.log('[FormWidget] Preview-Modus aktiviert');
+    enablePreviewMode(container);
+  });
 
-    // Kurz warten bis DOM gerendert ist, dann Karten-Layout anwenden
-    setTimeout(() => {
-      stylePreviewAsCards(container, sender);
-    }, 100);
+  // Preview-Mode deaktivieren wenn man "Bearbeiten" klickt
+  survey.onCurrentPageChanged.add((sender, options) => {
+    if (!sender.isShowingPreview) {
+      disablePreviewMode(container);
+    }
   });
 
   // Event: Formular abgeschlossen

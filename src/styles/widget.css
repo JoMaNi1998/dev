@@ -628,121 +628,84 @@
 }
 
 /* ══════════════════════════════════════════════════════════
-   PREVIEW MODE - Zusammenfassung vor dem Absenden
-   Design wie im Screenshot: Karten pro Seite mit Bearbeiten-Button
+   PREVIEW MODE (Zusammenfassung) - "Karten-Design"
    ══════════════════════════════════════════════════════════ */
 
-/* Preview Container - grauer Hintergrund, KEINE Karte */
+/* 1. Hintergrund & Container */
 .fw-container.fw-preview-mode {
-  padding: var(--fw-spacing-lg) !important;
-  background: var(--fw-gray-50) !important;
+  background-color: #f8fafc !important;
+  padding: 30px !important;
+  border: none !important;
   box-shadow: none !important;
   border-radius: 0 !important;
 }
 
-/* Body ohne Hintergrund */
-.fw-container.fw-preview-mode .sd-body {
-  background: transparent !important;
-}
-
-/* Der äußere Page-Container (transparent) */
-.fw-container.fw-preview-mode .sd-body > .sd-body__page {
-  background: transparent !important;
-  padding: 0 !important;
-}
-
-/* Jede Seite als SEPARATE Karte */
+/* 2. Jede Seite wird zur "Karte" (Weiße Box) */
 .fw-container.fw-preview-mode .sd-page {
   background: white !important;
-  border: 1px solid var(--fw-gray-200) !important;
-  border-radius: var(--fw-radius) !important;
-  padding: var(--fw-spacing-xl) !important;
-  margin-bottom: var(--fw-spacing-lg) !important;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05) !important;
+  padding: 24px !important;
+  margin-bottom: 24px !important;
+  border: 1px solid #e2e8f0 !important;
+  position: relative !important;
 }
 
-/* Der äußere Row-Container - keine eigene Karte */
-.fw-container.fw-preview-mode .sd-row {
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-  padding: 0 !important;
-  margin: 0 !important;
-}
-
-/* Seiten-Header mit Titel und Edit-Button */
-.fw-container.fw-preview-mode .sd-page__header {
-  display: flex !important;
-  justify-content: space-between !important;
-  align-items: center !important;
-  padding-bottom: var(--fw-spacing-lg) !important;
-  margin-bottom: var(--fw-spacing-lg) !important;
-  border-bottom: 1px solid var(--fw-gray-100) !important;
-}
-
+/* 3. Header der Karte (Titel) */
 .fw-container.fw-preview-mode .sd-page__title {
-  font-size: 1.125rem !important;
-  font-weight: var(--fw-font-weight-semibold) !important;
-  color: var(--fw-gray-900) !important;
-  margin: 0 !important;
-}
-
-/* Seiten-Beschreibung in Preview ausblenden */
-.fw-container.fw-preview-mode .sd-page__description {
-  display: none !important;
-}
-
-/* Edit Button - Bearbeiten */
-.fw-container.fw-preview-mode .sd-btn--action {
-  background: transparent !important;
+  font-size: 1.25rem !important;
   color: var(--fw-primary) !important;
+  margin-bottom: 1.5rem !important;
+  padding-bottom: 1rem !important;
+  border-bottom: 1px solid #f1f5f9 !important;
+}
+
+/* 4. Der "Bearbeiten" Button - Oben Rechts positioniert */
+.fw-container.fw-preview-mode .sd-page .sd-btn--action {
+  position: absolute !important;
+  top: 24px !important;
+  right: 24px !important;
+  background: transparent !important;
+  color: var(--fw-gray-600) !important;
+  border: 1px solid var(--fw-gray-300) !important;
+  padding: 6px 16px !important;
+  font-size: 0.85rem !important;
   box-shadow: none !important;
-  font-size: var(--fw-font-size-sm) !important;
-  padding: var(--fw-spacing-sm) var(--fw-spacing-md) !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  border: none !important;
-  cursor: pointer !important;
+  border-radius: 6px !important;
 }
 
-.fw-container.fw-preview-mode .sd-btn--action:hover {
-  background: var(--fw-primary-light) !important;
+.fw-container.fw-preview-mode .sd-page .sd-btn--action:hover {
+  background: var(--fw-gray-50) !important;
+  color: var(--fw-primary) !important;
+  border-color: var(--fw-primary) !important;
 }
 
-.fw-container.fw-preview-mode .sd-btn--action::before {
+.fw-container.fw-preview-mode .sd-page .sd-btn--action::before {
   content: "✏️ ";
 }
 
-/* Frage Container ohne Rahmen */
-.fw-container.fw-preview-mode .sd-element--with-frame {
-  border: none !important;
-  box-shadow: none !important;
-  padding: var(--fw-spacing-sm) 0 !important;
-  background: transparent !important;
-}
-
-/* Frage-Titel (Label) - klein und grau */
+/* 5. Fragen-Label (Klein & Grau) */
 .fw-container.fw-preview-mode .sd-question__title {
-  font-size: var(--fw-font-size-sm) !important;
+  font-size: 0.85rem !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
   color: var(--fw-gray-500) !important;
+  margin-bottom: 4px !important;
   font-weight: var(--fw-font-weight-normal) !important;
-  margin-bottom: var(--fw-spacing-xs) !important;
 }
 
-/* Required-Asterisk in Preview verstecken */
-.fw-container.fw-preview-mode .sd-question__required-text {
-  display: none !important;
-}
-
-/* Input-Felder in Preview - nur Wert anzeigen */
-.fw-container.fw-preview-mode .sd-input {
-  background: transparent !important;
-  border: none !important;
-  padding: 0 !important;
-  box-shadow: none !important;
-  font-size: var(--fw-font-size-base) !important;
+/* 6. Antworten (Fett & Dunkel) */
+.fw-container.fw-preview-mode .sd-question__content,
+.fw-container.fw-preview-mode .sd-input,
+.fw-container.fw-preview-mode .sd-dropdown__value {
+  font-weight: 600 !important;
   color: var(--fw-gray-900) !important;
-  font-weight: var(--fw-font-weight-medium) !important;
+  font-size: 1rem !important;
+  padding: 0 !important;
+  border: none !important;
+  background: transparent !important;
+  opacity: 1 !important;
+  -webkit-text-fill-color: var(--fw-gray-900) !important;
 }
 
 .fw-container.fw-preview-mode .sd-dropdown {
@@ -752,32 +715,35 @@
   box-shadow: none !important;
 }
 
-.fw-container.fw-preview-mode .sd-dropdown__value {
-  font-size: var(--fw-font-size-base) !important;
-  color: var(--fw-gray-900) !important;
-  font-weight: var(--fw-font-weight-medium) !important;
+/* Frage Container ohne Rahmen */
+.fw-container.fw-preview-mode .sd-element--with-frame {
+  border: none !important;
+  box-shadow: none !important;
+  padding: 8px 0 !important;
+  background: transparent !important;
 }
 
-/* Dropdown-Pfeil verstecken */
-.fw-container.fw-preview-mode .sd-dropdown__filter-string-input,
-.fw-container.fw-preview-mode .sd-dropdown__chevron-button {
-  display: none !important;
-}
-
-/* Panel Dynamic in Preview - Kompakte Tags */
+/* 7. DYNAMIC PANELS (Fächer) als "Chips/Tags" */
 .fw-container.fw-preview-mode .sd-paneldynamic__panels-container {
   display: flex !important;
   flex-wrap: wrap !important;
-  gap: var(--fw-spacing-sm) !important;
+  gap: 8px !important;
+}
+
+/* Der einzelne Eintrag (Graue Pille) */
+.fw-container.fw-preview-mode .sd-paneldynamic__panel-wrapper {
+  background: #f1f5f9 !important;
+  border-radius: 20px !important;
+  padding: 6px 16px !important;
+  border: 1px solid #e2e8f0 !important;
+  margin: 0 !important;
 }
 
 .fw-container.fw-preview-mode .sd-paneldynamic__panel-wrapper .sd-panel {
-  background: var(--fw-gray-100) !important;
+  background: transparent !important;
   border: none !important;
-  border-radius: 20px !important;
-  padding: var(--fw-spacing-sm) var(--fw-spacing-md) !important;
-  display: inline-flex !important;
-  align-items: center !important;
+  padding: 0 !important;
+  margin: 0 !important;
 }
 
 .fw-container.fw-preview-mode .sd-paneldynamic__panel-wrapper .sd-panel__header {
@@ -785,58 +751,64 @@
   min-height: auto !important;
 }
 
-.fw-container.fw-preview-mode .sd-paneldynamic__panel-wrapper .sd-panel__title {
-  font-size: var(--fw-font-size-sm) !important;
-  font-weight: var(--fw-font-weight-medium) !important;
+.fw-container.fw-preview-mode .sd-panel__title {
+  font-size: 0.9rem !important;
+  font-weight: 500 !important;
   color: var(--fw-gray-700) !important;
+  margin: 0 !important;
 }
 
-/* Panel Content in Preview verstecken (nur Titel zeigen) */
+/* Panel Content in Preview verstecken */
 .fw-container.fw-preview-mode .sd-paneldynamic__panel-wrapper .sd-panel__content {
   display: none !important;
 }
 
-/* Remove/Delete Buttons in Preview verstecken */
-.fw-container.fw-preview-mode .sd-paneldynamic__remove-btn,
-.fw-container.fw-preview-mode .fw-delete-btn,
-.fw-container.fw-preview-mode .fw-add-button-container,
-.fw-container.fw-preview-mode .sd-paneldynamic__add-btn {
-  display: none !important;
-}
-
-/* Radio/Checkbox - nur ausgewählte als Tag anzeigen */
+/* 8. Radio/Checkbox - nur ausgewählte als Tag anzeigen */
 .fw-container.fw-preview-mode .sd-selectbase__item .sd-item__decorator {
   display: none !important;
 }
 
 .fw-container.fw-preview-mode .sd-selectbase__item--checked .sd-selectbase__control-label {
-  background: var(--fw-gray-100) !important;
-  padding: var(--fw-spacing-xs) var(--fw-spacing-md) !important;
-  border-radius: 16px !important;
-  font-size: var(--fw-font-size-sm) !important;
+  background: #f1f5f9 !important;
+  padding: 6px 16px !important;
+  border-radius: 20px !important;
+  font-size: 0.9rem !important;
   color: var(--fw-gray-700) !important;
+  border: 1px solid #e2e8f0 !important;
 }
 
 .fw-container.fw-preview-mode .sd-selectbase__item:not(.sd-selectbase__item--checked) {
   display: none !important;
 }
 
-/* Navigation Buttons in Preview */
+/* Verstecke alles, was in der Zusammenfassung stört */
+.fw-container.fw-preview-mode .sd-question__required-text,
+.fw-container.fw-preview-mode .sd-page__description,
+.fw-container.fw-preview-mode .sd-paneldynamic__remove-btn,
+.fw-container.fw-preview-mode .fw-delete-btn,
+.fw-container.fw-preview-mode .fw-add-button-container,
+.fw-container.fw-preview-mode .sd-paneldynamic__add-btn,
+.fw-container.fw-preview-mode .sd-dropdown__chevron-button,
+.fw-container.fw-preview-mode .sd-dropdown__filter-string-input {
+  display: none !important;
+}
+
+/* 9. Navigation Buttons in Preview */
 .fw-container.fw-preview-mode .sd-navigation {
   display: flex !important;
   flex-direction: column !important;
-  gap: var(--fw-spacing-md) !important;
-  margin-top: var(--fw-spacing-xl) !important;
+  gap: 12px !important;
+  margin-top: 24px !important;
 }
 
 .fw-container.fw-preview-mode .sd-navigation__complete-btn {
   width: 100% !important;
   background: var(--fw-primary) !important;
   color: white !important;
-  padding: var(--fw-spacing-lg) var(--fw-spacing-xl) !important;
-  font-size: var(--fw-font-size-base) !important;
-  font-weight: var(--fw-font-weight-semibold) !important;
-  border-radius: var(--fw-radius) !important;
+  padding: 16px 24px !important;
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+  border-radius: 12px !important;
 }
 
 .fw-container.fw-preview-mode .sd-navigation__complete-btn::before {
@@ -848,7 +820,8 @@
   background: white !important;
   border: 1px solid var(--fw-gray-300) !important;
   color: var(--fw-gray-700) !important;
-  padding: var(--fw-spacing-md) var(--fw-spacing-xl) !important;
+  padding: 12px 24px !important;
+  border-radius: 12px !important;
 }
 
 .fw-container.fw-preview-mode .sd-navigation__prev-btn::before {
