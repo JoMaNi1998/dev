@@ -1,16 +1,13 @@
 /**
- * Form Widget - Generic Engine
- * Generisches, einbettbares Formular-Widget basierend auf SurveyJS
+ * Form Widget - Generic Engine (v2 Native)
+ * Generisches, einbettbares Formular-Widget basierend auf SurveyJS v2
  */
 
 import { Model, Serializer } from 'survey-core';
-import 'survey-jquery';
-import $ from 'jquery';
+import { SurveyModel } from 'survey-js-ui';
 
-// SurveyJS Standard-CSS importieren (Vite bündelt das)
-import 'survey-jquery/defaultV2.min.css';
-
-// Widget CSS
+// Styles
+import 'survey-core/survey-core.min.css';
 import './styles/widget.css';
 
 // Custom Property "helpText" für Fragen registrieren
@@ -43,7 +40,6 @@ function showHelpModal(title, text) {
     document.body.insertAdjacentHTML('beforeend', modalHtml);
     modal = document.getElementById('fw-help-modal');
 
-    // Klick auf Backdrop schließt Modal
     modal.addEventListener('click', (e) => {
       const rect = modal.getBoundingClientRect();
       if (e.clientY < rect.top || e.clientY > rect.bottom ||
@@ -83,9 +79,7 @@ function applyTheme(theme = {}) {
  * @param {string} containerId - ID des Container-Elements
  * @param {Object} formConfig - Das SurveyJS JSON Config-Objekt
  * @param {Object} options - Optionale Konfiguration
- * @param {Object} options.theme - Farb-Theme { primary, primaryHover, primaryLight, primaryDark }
- * @param {Function} options.onComplete - Callback bei Formular-Abschluss
- * @returns {Model} - Survey-Instanz für externe Kontrolle
+ * @returns {Model} - Survey-Instanz
  */
 export function initForm(containerId, formConfig, options = {}) {
   const container = document.getElementById(containerId);
@@ -99,34 +93,27 @@ export function initForm(containerId, formConfig, options = {}) {
     applyTheme(options.theme);
   }
 
+  // Survey Model erstellen
   const survey = new Model(formConfig);
 
   // HTML in Beschreibungen rendern
-  survey.onTextMarkdown.add((survey, options) => {
-    options.html = options.text;
+  survey.onTextMarkdown.add((survey, opts) => {
+    opts.html = opts.text;
   });
 
-  // Hilfe-Icon in Titel einfügen wenn helpText vorhanden
-  survey.onGetQuestionTitleActions.add((sender, options) => {
-    if (!options.question.helpText) return;
+  // Hilfe-Icon mit Fragezeichen
+  survey.onGetQuestionTitleActions.add((sender, opts) => {
+    if (!opts.question.helpText) return;
 
-    const helpAction = {
+    opts.titleActions.push({
       id: "help-action",
+      component: "sv-action-bar-item",
       title: "Hilfe anzeigen",
+      showTitle: false,
+      data: { title: "❓" },
       innerCss: "fw-help-icon",
-      action: () => {
-        showHelpModal(options.question.title, options.question.helpText);
-      }
-    };
-
-    options.titleActions.push(helpAction);
-  });
-
-  // Event: Wert geändert
-  survey.onValueChanged.add((sender, options) => {
-    if (options.name === 'Position') {
-      console.log(`[FormWidget] Position: ${options.value}`);
-    }
+      action: () => showHelpModal(opts.question.title, opts.question.helpText)
+    });
   });
 
   // Event: Formular abgeschlossen
@@ -137,11 +124,11 @@ export function initForm(containerId, formConfig, options = {}) {
     }
   });
 
-  // Mit jQuery rendern
-  $(function() {
-    $(`#${containerId}`).Survey({ model: survey });
-    console.log('[FormWidget] Widget initialisiert');
-  });
+  // V2 Native Rendering (ohne jQuery!)
+  const surveyUI = new SurveyModel(survey);
+  surveyUI.render(containerId);
+
+  console.log('[FormWidget] Widget initialisiert (v2 Native)');
 
   return survey;
 }
@@ -149,8 +136,6 @@ export function initForm(containerId, formConfig, options = {}) {
 // Global verfügbar machen
 if (typeof window !== 'undefined') {
   window.FormWidget = { init: initForm };
-
-  // Alias für ChancenPilot (Abwärtskompatibilität)
   window.ChancenPilot = window.FormWidget;
 }
 
