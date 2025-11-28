@@ -898,3 +898,51 @@
 .fw-container.fw-preview-mode .sd-navigation__prev-btn::before {
   content: "← ";
 }
+
+/* ══════════════════════════════════════════════════════════
+   PREVIEW MODE: Karten-Styling (für .fw-card-styled Klasse)
+   ══════════════════════════════════════════════════════════ */
+
+/* Karten-Header mit Titel links und Edit-Button rechts */
+.fw-container.fw-preview-mode .fw-card-styled .sd-page__header {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  padding-bottom: 16px !important;
+  margin-bottom: 16px !important;
+  border-bottom: 1px solid #f1f5f9 !important;
+}
+
+/* Titel in der Karte */
+.fw-container.fw-preview-mode .fw-card-styled .sd-page__title {
+  font-size: 1.25rem !important;
+  font-weight: 600 !important;
+  color: #2a667b !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+}
+
+/* Edit-Button Styling in der Karte */
+.fw-container.fw-preview-mode .fw-card-styled .sd-btn--action {
+  position: static !important;
+  background: transparent !important;
+  color: #4b5563 !important;
+  border: 1px solid #d1d5db !important;
+  padding: 6px 16px !important;
+  font-size: 0.85rem !important;
+  border-radius: 6px !important;
+  cursor: pointer !important;
+  box-shadow: none !important;
+}
+
+.fw-container.fw-preview-mode .fw-card-styled .sd-btn--action:hover {
+  background: var(--fw-primary-light) !important;
+  border-color: var(--fw-primary) !important;
+  color: var(--fw-primary) !important;
+}
+
+/* "hinzufügen/gewählt" Titel verstecken */
+.fw-container.fw-preview-mode .fw-hide-title .sd-question__header {
+  display: none !important;
+}

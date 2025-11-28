@@ -18,6 +18,53 @@ Serializer.addProperty("question", {
   visibleIndex: 3
 });
 
+/**
+ * Sanitized HTML-Text (XSS Prevention)
+ * Erlaubt nur sichere Tags: <br>, <b>, <strong>, <i>, <em>, <p>, <ul>, <ol>, <li>
+ * @param {string} html - Potenziell unsicherer HTML-String
+ * @returns {string} - Bereinigter HTML-String
+ */
+function sanitizeHtml(html) {
+  if (!html || typeof html !== 'string') return '';
+
+  // Erlaubte Tags (Whitelist)
+  const allowedTags = ['br', 'b', 'strong', 'i', 'em', 'p', 'ul', 'ol', 'li', 'a'];
+
+  // Temporäres Element für DOM-basierte Sanitization
+  const temp = document.createElement('div');
+  temp.innerHTML = html;
+
+  // Alle Elemente durchgehen und nicht erlaubte entfernen
+  const allElements = temp.querySelectorAll('*');
+  allElements.forEach(el => {
+    const tagName = el.tagName.toLowerCase();
+
+    if (!allowedTags.includes(tagName)) {
+      // Ersetze nicht erlaubtes Element durch seinen Textinhalt
+      el.replaceWith(document.createTextNode(el.textContent));
+    } else if (tagName === 'a') {
+      // Bei Links nur href erlauben und target="_blank" setzen
+      const href = el.getAttribute('href');
+      // Entferne alle Attribute
+      while (el.attributes.length > 0) {
+        el.removeAttribute(el.attributes[0].name);
+      }
+      if (href && (href.startsWith('http://') || href.startsWith('https://'))) {
+        el.setAttribute('href', href);
+        el.setAttribute('target', '_blank');
+        el.setAttribute('rel', 'noopener noreferrer');
+      }
+    } else {
+      // Entferne alle Attribute von erlaubten Tags (außer Links)
+      while (el.attributes.length > 0) {
+        el.removeAttribute(el.attributes[0].name);
+      }
+    }
+  });
+
+  return temp.innerHTML;
+}
+
 // Custom Property "popupMode" für paneldynamic
 Serializer.addProperty("paneldynamic", {
   name: "popupMode",
@@ -25,6 +72,22 @@ Serializer.addProperty("paneldynamic", {
   default: false,
   category: "general"
 });
+
+/**
+ * Default-Texte für Lokalisierung (überschreibbar via options.text)
+ */
+const defaultTexts = {
+  understood: 'Verstanden',
+  addEntry: 'Eintrag hinzufügen',
+  cancel: 'Abbrechen',
+  save: 'Hinzufügen',
+  edit: '✏️ Bearbeiten',
+  remove: 'Entfernen',
+  showHelp: 'Hilfe anzeigen'
+};
+
+// Aktuelle Texte (werden in initForm gesetzt)
+let currentTexts = { ...defaultTexts };
 
 /**
  * Zeigt ein Modal mit Hilfetext an
@@ -41,7 +104,7 @@ function showHelpModal(title, text) {
         </div>
         <div class="fw-modal-content" id="fw-modal-content"></div>
         <div class="fw-modal-footer">
-          <button onclick="document.getElementById('fw-help-modal').close()" class="fw-modal-btn">Verstanden</button>
+          <button onclick="document.getElementById('fw-help-modal').close()" class="fw-modal-btn">${currentTexts.understood}</button>
         </div>
       </dialog>
     `;
@@ -58,7 +121,8 @@ function showHelpModal(title, text) {
   }
 
   document.getElementById('fw-modal-title').innerText = title;
-  document.getElementById('fw-modal-content').innerHTML = text;
+  // XSS Prevention: Sanitize HTML bevor es gerendert wird
+  document.getElementById('fw-modal-content').innerHTML = sanitizeHtml(text);
   modal.showModal();
 }
 
@@ -71,13 +135,13 @@ function createDynamicModal() {
   const modalHtml = `
     <dialog id="fw-dynamic-modal" class="fw-modal">
       <div class="fw-modal-header">
-        <span id="fw-dynamic-title">Eintrag hinzufügen</span>
+        <span id="fw-dynamic-title">${currentTexts.addEntry}</span>
         <button id="fw-dynamic-close" class="fw-modal-close">&times;</button>
       </div>
       <div id="fw-dynamic-body" class="fw-popup-survey-container"></div>
       <div class="fw-modal-actions">
-        <button class="fw-btn-secondary" id="fw-dynamic-cancel">Abbrechen</button>
-        <button class="fw-btn-primary" id="fw-dynamic-save">Hinzufügen</button>
+        <button class="fw-btn-secondary" id="fw-dynamic-cancel">${currentTexts.cancel}</button>
+        <button class="fw-btn-primary" id="fw-dynamic-save">${currentTexts.save}</button>
       </div>
     </dialog>
   `;
@@ -111,7 +175,7 @@ function openDynamicPopup(question) {
   const saveBtn = document.getElementById('fw-dynamic-save');
 
   // Titel setzen (Emoji entfernen falls vorhanden)
-  const titleText = (question.panelAddText || 'Eintrag hinzufügen').replace(/^[\u{1F300}-\u{1F9FF}]\s*/u, '');
+  const titleText = (question.panelAddText || currentTexts.addEntry).replace(/^[\u{1F300}-\u{1F9FF}]\s*/u, '');
   titleEl.innerText = titleText;
 
   // Mini-Survey Config aus den templateElements erstellen
@@ -193,6 +257,7 @@ function openDynamicPopup(question) {
 
 /**
  * Fügt den Custom Add-Button für paneldynamic mit popupMode hinzu
+ * Nutzt SurveyJS Events statt MutationObserver (Performance-Optimierung)
  */
 function setupDynamicPopupButton(question, htmlElement) {
   // Prüfen ob Button schon existiert
@@ -204,24 +269,15 @@ function setupDynamicPopupButton(question, htmlElement) {
     panelDynamic.classList.add('fw-popup-mode');
   }
 
-  // Lösch-Buttons zu bestehenden Panels hinzufügen
+  // Lösch-Buttons zu bestehenden Panels hinzufügen (einmalig beim Setup)
   addDeleteButtonsToPanels(question, htmlElement);
-
-  // Bei Änderungen der Panel-Anzahl neu rendern (MutationObserver)
-  const observer = new MutationObserver(() => {
-    addDeleteButtonsToPanels(question, htmlElement);
-  });
-  const panelsContainer = htmlElement.querySelector('.sd-paneldynamic__panels-container');
-  if (panelsContainer) {
-    observer.observe(panelsContainer, { childList: true, subtree: true });
-  }
 
   // Button Container erstellen
   const btnContainer = document.createElement('div');
   btnContainer.className = 'fw-add-button-container';
   btnContainer.innerHTML = `
     <button type="button" class="fw-add-btn">
-      ${question.panelAddText || '➕ Eintrag hinzufügen'}
+      ${question.panelAddText || '➕ ' + currentTexts.addEntry}
     </button>
   `;
 
@@ -231,6 +287,32 @@ function setupDynamicPopupButton(question, htmlElement) {
   // Am Ende der Frage einfügen
   const panelRoot = panelDynamic || htmlElement;
   panelRoot.appendChild(btnContainer);
+}
+
+/**
+ * Fügt einen Lösch-Button zu einem einzelnen Panel hinzu
+ * Wird vom onAfterRenderPanel Event aufgerufen
+ */
+function addDeleteButtonToPanel(question, panelElement, panelIndex) {
+  // Prüfen ob Button schon existiert
+  if (panelElement.querySelector('.fw-delete-btn')) return;
+
+  const deleteBtn = document.createElement('button');
+  deleteBtn.type = 'button';
+  deleteBtn.className = 'fw-delete-btn';
+  deleteBtn.innerHTML = '🗑️';
+  deleteBtn.title = currentTexts.remove;
+  deleteBtn.onclick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    question.removePanel(panelIndex);
+  };
+
+  // Button zum Panel hinzufügen
+  const sdPanel = panelElement.querySelector('.sd-panel');
+  if (sdPanel) {
+    sdPanel.appendChild(deleteBtn);
+  }
 }
 
 /**
@@ -247,7 +329,7 @@ function addDeleteButtonsToPanels(question, htmlElement) {
     deleteBtn.type = 'button';
     deleteBtn.className = 'fw-delete-btn';
     deleteBtn.innerHTML = '🗑️';
-    deleteBtn.title = 'Entfernen';
+    deleteBtn.title = currentTexts.remove;
     deleteBtn.onclick = (e) => {
       e.preventDefault();
       e.stopPropagation();
@@ -278,45 +360,26 @@ function enablePreviewMode(container, survey) {
 
 /**
  * Styled die Preview-Seite mit Karten-Layout
+ * Nutzt CSS-Klassen statt Inline-Styles (Separation of Concerns)
  */
 function stylePreviewPage(container, survey) {
-  // 1. Beschreibungen verstecken
-  container.querySelectorAll('.sd-page__description').forEach(el => {
-    el.style.display = 'none';
-  });
-
-  // 2. "hinzufügen" Titel verstecken
+  // 1. "hinzufügen/gewählt" Titel verstecken via CSS-Klasse
   container.querySelectorAll('.sd-question__title').forEach(el => {
     const text = el.textContent.toLowerCase();
     if (text.includes('hinzufügen') || text.includes('gewählt')) {
-      el.closest('.sd-question__header')?.style.setProperty('display', 'none', 'important');
+      el.closest('.sd-question')?.classList.add('fw-hide-title');
     }
   });
 
-  // 3. Hilfe-Buttons verstecken
-  container.querySelectorAll('.fw-help-icon, .sd-action-bar-item, [title="Hilfe anzeigen"]').forEach(el => {
-    el.style.display = 'none';
-  });
-
-  // 4. Jede Seite als Karte stylen mit Edit-Button oben rechts
-  container.querySelectorAll('.sd-page').forEach((page, index) => {
+  // 2. Jede Seite als Karte markieren (Styles kommen aus CSS)
+  container.querySelectorAll('.sd-page').forEach((page) => {
     if (page.classList.contains('fw-card-styled')) return;
     page.classList.add('fw-card-styled');
 
-    const header = page.querySelector('.sd-page__header');
-    const title = page.querySelector('.sd-page__title');
+    // Edit-Button Text anpassen
     const editBtn = page.querySelector('.sd-btn--action');
-
-    if (header && title && editBtn) {
-      // Header stylen
-      header.style.cssText = 'display: flex !important; justify-content: space-between !important; align-items: center !important; padding-bottom: 16px !important; margin-bottom: 16px !important; border-bottom: 1px solid #f1f5f9 !important;';
-
-      // Titel stylen
-      title.style.cssText = 'font-size: 1.25rem !important; font-weight: 600 !important; color: #2a667b !important; margin: 0 !important; padding: 0 !important; border: none !important;';
-
-      // Edit-Button stylen
-      editBtn.innerHTML = '✏️ Bearbeiten';
-      editBtn.style.cssText = 'position: static !important; background: transparent !important; color: #4b5563 !important; border: 1px solid #d1d5db !important; padding: 6px 16px !important; font-size: 0.85rem !important; border-radius: 6px !important; cursor: pointer !important; box-shadow: none !important;';
+    if (editBtn) {
+      editBtn.textContent = currentTexts.edit;
     }
   });
 
@@ -390,6 +453,9 @@ export function initForm(containerId, formConfig, options = {}) {
     return null;
   }
 
+  // Lokalisierung: Texte mit übergebenen Options mergen
+  currentTexts = { ...defaultTexts, ...options.text };
+
   // Container-Klasse hinzufügen (für Widget-Styles)
   container.classList.add('fw-container');
 
@@ -411,7 +477,7 @@ export function initForm(containerId, formConfig, options = {}) {
     opts.titleActions.push({
       id: "help-action",
       component: "sv-action-bar-item",
-      title: "Hilfe anzeigen",
+      title: currentTexts.showHelp,
       showTitle: false,
       data: { title: "❓" },
       innerCss: "fw-help-icon",
@@ -426,6 +492,20 @@ export function initForm(containerId, formConfig, options = {}) {
     // Nur für paneldynamic mit popupMode: true
     if (question.getType() === 'paneldynamic' && question.popupMode) {
       setupDynamicPopupButton(question, opts.htmlElement);
+    }
+  });
+
+  // SurveyJS Event statt MutationObserver: Lösch-Button bei neuem Panel hinzufügen
+  survey.onAfterRenderPanel.add((sender, opts) => {
+    const question = opts.question;
+
+    // Nur für paneldynamic mit popupMode
+    if (question && question.getType() === 'paneldynamic' && question.popupMode) {
+      // Panel-Index ermitteln
+      const panelIndex = question.panels.indexOf(opts.panel);
+      if (panelIndex >= 0) {
+        addDeleteButtonToPanel(question, opts.htmlElement, panelIndex);
+      }
     }
   });
 
@@ -454,7 +534,53 @@ export function initForm(containerId, formConfig, options = {}) {
 
   console.log('[FormWidget] Widget initialisiert (v2 Vanilla)');
 
-  return survey;
+  // Rückgabe eines Objekts mit Steuerungsfunktionen (Memory Leak Prevention)
+  return {
+    survey: survey,
+
+    /**
+     * Räumt alle Ressourcen auf (für SPA-Nutzung)
+     * Entfernt Modals, Event-Listener und Survey-Instanz
+     */
+    unmount: () => {
+      // 1. Survey-Instanz bereinigen
+      if (survey && typeof survey.dispose === 'function') {
+        survey.dispose();
+      }
+
+      // 2. Globale Modals entfernen
+      const helpModal = document.getElementById('fw-help-modal');
+      if (helpModal) helpModal.remove();
+
+      const dynamicModal = document.getElementById('fw-dynamic-modal');
+      if (dynamicModal) dynamicModal.remove();
+
+      // 3. Container aufräumen
+      container.innerHTML = '';
+      container.classList.remove('fw-container', 'fw-preview-mode');
+
+      // 4. CSS-Variablen entfernen
+      container.style.removeProperty('--fw-primary');
+      container.style.removeProperty('--fw-primary-hover');
+      container.style.removeProperty('--fw-primary-light');
+      container.style.removeProperty('--fw-primary-dark');
+      container.style.removeProperty('--fw-radius');
+      container.style.removeProperty('--fw-font-family');
+      container.style.removeProperty('--fw-bg');
+      container.style.removeProperty('--fw-text');
+      container.style.removeProperty('--fw-border');
+
+      console.log('[FormWidget] Widget unmounted');
+    },
+
+    /**
+     * Setzt das Formular auf den Ausgangszustand zurück
+     */
+    reset: () => {
+      survey.clear();
+      survey.render(container);
+    }
+  };
 }
 
 // Global verfügbar machen
