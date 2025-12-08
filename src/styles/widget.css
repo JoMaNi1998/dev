@@ -270,11 +270,21 @@
   border-radius: var(--fw-radius) !important;
   color: var(--fw-text) !important;
   background-color: var(--fw-bg) !important;
+  min-height: 56px !important;
+  max-height: 56px !important;
+  padding: 0 16px !important;
+  display: flex !important;
+  align-items: center !important;
 }
 
 .fw-container .sd-dropdown:focus-within {
   border-color: var(--fw-primary) !important;
   box-shadow: 0 0 0 3px var(--fw-primary-light) !important;
+}
+
+/* Verstecke den Clear-Button (X) bei Dropdowns */
+.fw-container .sd-dropdown__clean-button {
+  display: none !important;
 }
 
 /* Buttons */
@@ -298,27 +308,74 @@
   box-shadow: var(--fw-shadow-lg) !important;
 }
 
-/* Navigation Buttons */
+/* Navigation Container - Volle Breite, vertikal gestapelt */
+.fw-container .sd-body__navigation {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 12px !important;
+  padding: var(--fw-spacing-lg) 40px !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* Action Wrapper - Volle Breite (SurveyJS wrapper elements) */
+.fw-container .sd-body__navigation .sv-action {
+  width: 100% !important;
+  flex: none !important;
+  max-width: 100% !important;
+}
+
+/* Next/Complete Button zuerst (oben) */
+.fw-container .sd-body__navigation .sv-action:has(.sd-navigation__next-btn),
+.fw-container .sd-body__navigation .sv-action:has(.sd-navigation__complete-btn),
+.fw-container .sd-body__navigation .sv-action:has(.sd-navigation__preview-btn) {
+  order: 1 !important;
+}
+
+/* Previous Button danach (unten) */
+.fw-container .sd-body__navigation .sv-action:has(.sd-navigation__prev-btn) {
+  order: 2 !important;
+}
+
+.fw-container .sd-body__navigation .sv-action__content {
+  width: 100% !important;
+  display: block !important;
+}
+
+/* Alle Navigation Buttons - Volle Breite */
+.fw-container .sd-body__navigation .sd-btn {
+  width: 100% !important;
+  flex: none !important;
+  margin: 0 !important;
+}
+
+/* Primary Buttons (Weiter, Zusammenfassung, Absenden) */
 .fw-container .sd-navigation__complete-btn,
-.fw-container .sd-navigation__next-btn {
+.fw-container .sd-navigation__next-btn,
+.fw-container .sd-navigation__preview-btn {
+  width: 100% !important;
   background: var(--fw-primary) !important;
   color: white !important;
   border-radius: var(--fw-radius) !important;
-  padding: 14px 28px !important;
+  padding: 16px 28px !important;
   font-weight: var(--fw-font-weight-semibold) !important;
   box-shadow: var(--fw-shadow) !important;
 }
 
 .fw-container .sd-navigation__complete-btn:hover,
-.fw-container .sd-navigation__next-btn:hover {
+.fw-container .sd-navigation__next-btn:hover,
+.fw-container .sd-navigation__preview-btn:hover {
   background: var(--fw-primary-dark) !important;
 }
 
+/* Zurück Button */
 .fw-container .sd-navigation__prev-btn {
+  width: 100% !important;
   border: 2px solid var(--fw-gray-300) !important;
   border-radius: var(--fw-radius) !important;
   color: var(--fw-gray-700) !important;
   background: white !important;
+  padding: 14px 28px !important;
 }
 
 .fw-container .sd-navigation__prev-btn:hover {
@@ -341,8 +398,14 @@
 }
 
 .fw-container .sd-item--checked .sd-item__decorator {
-  background: var(--fw-primary) !important;
   border-color: var(--fw-primary) !important;
+}
+
+/* Radio Button - Ring-Stil (Kreis mit Punkt in der Mitte) */
+.fw-container .sd-item--checked.sd-radio .sd-item__decorator {
+  background: white !important;
+  border-color: var(--fw-primary) !important;
+  border-width: 6px !important;
 }
 
 .fw-container .sd-item__decorator {
@@ -431,7 +494,6 @@
 
 /* Das Formular im Popup */
 .fw-popup-survey-container {
-  padding: var(--fw-spacing-xl);
   max-height: 60vh;
   overflow-y: auto;
 }
@@ -464,6 +526,7 @@
 /* Popup Survey Wrapper */
 .fw-popup-survey {
   min-height: 100px;
+  padding: var(--fw-spacing-xl);
 }
 
 .fw-popup-survey .sd-root-modern {
@@ -569,8 +632,13 @@
 }
 
 .sd-paneldynamic.fw-popup-mode .sd-panel__header {
-  padding: 0;
-  min-height: auto;
+  padding: 0 !important;
+  min-height: auto !important;
+  margin: 0 !important;
+}
+
+.sd-paneldynamic.fw-popup-mode .sd-panel__header.sd-element__header--location-top {
+  padding-top: 0 !important;
 }
 
 .sd-paneldynamic.fw-popup-mode .sd-panel__title {
